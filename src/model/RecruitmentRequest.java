@@ -1,0 +1,25 @@
+package model;
+
+public class RecruitmentRequest {
+    private static int counter = 1;
+    private int id;
+    private String department;
+    private String reason;
+    private String status;
+
+    public RecruitmentRequest(String department, String reason) {
+        this.id = counter++;
+        this.department = department;
+        this.reason = reason;
+        this.status = "Pending HR";
+    }
+
+    public int getId() { return id; }
+    public void setStatus(String status) { this.status = status; }
+
+    @Override
+    public String toString() {
+        return "Recruitment#" + id + " (" + department + "): " + reason +
+                " [" + status + "]";
+    }
+}
