@@ -1,10 +1,11 @@
 package service;
 
 import model.*;
-import java.util.Optional;
+import java.util.*;
 
 public class HRService {
     private final DataStore store;
+    private final Scanner sc = new Scanner(System.in);
 
     public HRService(DataStore store) {
         this.store = store;
@@ -13,13 +14,13 @@ public class HRService {
     /**
      * Request a new recruitment for a specific event.
      */
-    public void requestRecruitment(int eventId, String department, String reason) {
+    public void requestRecruitment(int eventId, String department, String reason, int numberOfPositions) {
         Optional<EventRequest> e = store.events.stream()
                 .filter(ev -> ev.getId() == eventId)
                 .findFirst();
 
         if (e.isPresent()) {
-            RecruitmentRequest r = new RecruitmentRequest(department, reason);
+            RecruitmentRequest r = new RecruitmentRequest(department, reason, numberOfPositions);
             e.get().addRecruitment(r);
             System.out.println("✅ Recruitment request added for Event#" + eventId);
         } else {
@@ -46,8 +47,33 @@ public class HRService {
                 .findFirst();
 
         if (r.isPresent()) {
-            r.get().setStatus(newStatus);
-            System.out.println("✅ Recruitment#" + recruitmentId + " updated to: " + newStatus);
+            RecruitmentRequest req = r.get();
+            boolean approved = newStatus.equalsIgnoreCase("Approved") ||
+                    newStatus.equalsIgnoreCase("Approve") ||
+                    newStatus.equalsIgnoreCase("Yes");
+
+            if (approved) {
+                System.out.println("✅ Recruitment approved for department: " + req.getDepartment());
+                List<String> newMembers = new ArrayList<>();
+
+                for (int i = 1; i <= req.getNumberOfPositions(); i++) {
+                    System.out.print("Enter name of new member #" + i + ": ");
+                    String member = sc.nextLine().trim();
+                    if (!member.isEmpty()) {
+                        newMembers.add(member);
+                        event.addMemberToDepartment(req.getDepartment(), member);
+                    }
+                }
+
+                req.setStatus("Approved (" + newMembers.size() + " members added)");
+                event.setNumberOfWorkers(event.getNumberOfWorkers() + newMembers.size());
+                System.out.println("👥 Added " + newMembers.size() + " new members to " + req.getDepartment());
+            } else {
+                req.setStatus("Rejected");
+                System.out.println("❌ Recruitment#" + recruitmentId + " has been rejected.");
+            }
+
+            System.out.println("✅ Recruitment#" + recruitmentId + " updated to: " + req.toString());
         } else {
             System.out.println("⚠️ Recruitment not found with ID " + recruitmentId + " in Event#" + eventId);
         }

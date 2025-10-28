@@ -23,4 +23,19 @@ public class EventService {
                 e.setNotes(notes);
             }
     }
+
+//    get events
+    public EventRequest getEventById(int id) {
+        for (EventRequest e : store.events) {
+            if (e.getId() == id) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+//    return all events
+    public java.util.List<EventRequest> getAllEvents() {
+        return store.events;
+    }
 }

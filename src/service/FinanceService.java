@@ -2,6 +2,7 @@ package service;
 
 import model.*;
 import java.util.Optional;
+import java.util.Scanner;
 
 public class FinanceService {
     private final DataStore store;
@@ -24,16 +25,41 @@ public class FinanceService {
         }
     }
 
-    public void processFinance(int eventId, int financeId, String status) {
+    public void processFinance(int eventId, int financeId, String decision) {
         Optional<EventRequest> e = store.events.stream()
                 .filter(ev -> ev.getId() == eventId)
                 .findFirst();
 
         if (e.isPresent()) {
-            for (FinancialRequest f : e.get().getFinances()) {
+            EventRequest event = e.get();
+            for (FinancialRequest f : event.getFinances()) {
                 if (f.getId() == financeId) {
-                    f.setStatus(status);
-                    System.out.println("✅ Finance#" + financeId + " for Event#" + eventId + " updated to " + status);
+
+                    boolean approved = decision.equalsIgnoreCase("Approved") ||
+                            decision.equalsIgnoreCase("Approve") ||
+                            decision.equalsIgnoreCase("Yes") ||
+                            decision.equalsIgnoreCase("True");
+
+                    if (approved) {
+                        Scanner sc = new Scanner(System.in);
+                        System.out.print("Enter the approved amount to add to event budget: $");
+                        double amount = 0;
+                        try {
+                            amount = Double.parseDouble(sc.nextLine());
+                        } catch (NumberFormatException ex) {
+                            System.out.println("⚠️ Invalid number. No budget updated.");
+                            return;
+                        }
+
+                        double newBudget = event.getBudget() + amount;
+                        event.setBudget(newBudget);
+                        f.setStatus("Approved - $" + amount + " added");
+                        System.out.println("✅ Approved! Event#" + eventId + " budget increased by $" + amount);
+                        System.out.println("💰 New budget: $" + newBudget);
+                    } else {
+                        f.setStatus("Rejected");
+                        System.out.println("❌ Finance request #" + financeId + " has been rejected.");
+                    }
                     return;
                 }
             }

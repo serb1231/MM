@@ -6,12 +6,14 @@ public class RecruitmentRequest {
     private String department;
     private String reason;
     private String status;
+    private int numberOfPositions;
 
-    public RecruitmentRequest(String department, String reason) {
+    public RecruitmentRequest(String department, String reason, int numberOfPositions) {
         this.id = counter++;
         this.department = department;
         this.reason = reason;
         this.status = "Pending HR";
+        this.numberOfPositions = numberOfPositions;
     }
 
     public int getId() { return id; }
@@ -20,6 +22,14 @@ public class RecruitmentRequest {
     @Override
     public String toString() {
         return "Recruitment#" + id + " (" + department + "): " + reason +
-                " [" + status + "]";
+                " [" + status + "]" + " - Positions: " + numberOfPositions;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public int getNumberOfPositions() {
+        return numberOfPositions;
     }
 }

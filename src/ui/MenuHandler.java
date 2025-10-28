@@ -82,30 +82,42 @@ public class MenuHandler {
                     }
                     break;
 
-                // -------------------- FINANCIAL MANAGER --------------------
+// -------------------- FINANCIAL MANAGER --------------------
                 case "FinancialManager":
                     System.out.println("\n[Financial Manager Menu]");
                     System.out.println("1. Approve/Reject Budgets  2. View Finance Requests by Event  3. Logout");
-                    int fm = Integer.parseInt(sc.nextLine());
-                    if (fm == 1) {
-                        events.listEvents();
-                        System.out.print("Enter Event ID: ");
-                        int eId = Integer.parseInt(sc.nextLine());
-                        finance.listFinances(eId);
-                        System.out.print("Enter Finance ID to update: ");
-                        int fId = Integer.parseInt(sc.nextLine());
-                        System.out.print("New Status (Approved/Rejected): ");
-                        String st = sc.nextLine();
-                        finance.processFinance(eId, fId, st);
-                    } else if (fm == 2) {
-                        events.listEvents();
-                        System.out.print("Enter Event ID: ");
-                        int eId = Integer.parseInt(sc.nextLine());
-                        finance.listFinances(eId);
-                    } else {
-                        active = false;
+                    String fmInput = sc.nextLine().trim();
+
+                    switch (fmInput) {
+                        case "1":
+                            events.listEvents();
+                            System.out.print("Enter Event ID: ");
+                            int eId = Integer.parseInt(sc.nextLine());
+                            finance.listFinances(eId);
+                            System.out.print("Enter Finance ID to update: ");
+                            int fId = Integer.parseInt(sc.nextLine());
+                            System.out.print("Decision (Approved/Rejected): ");
+                            String st = sc.nextLine();
+                            finance.processFinance(eId, fId, st);
+                            break;
+
+                        case "2":
+                            events.listEvents();
+                            System.out.print("Enter Event ID: ");
+                            int viewId = Integer.parseInt(sc.nextLine());
+                            finance.listFinances(viewId);
+                            break;
+
+                        case "3":
+                            active = false;
+                            break;
+
+                        default:
+                            System.out.println("⚠️ Invalid input. Please choose 1, 2, or 3.");
+                            break;
                     }
                     break;
+
 
                 // -------------------- ADMIN MANAGER --------------------
                 case "AdminManager":
@@ -139,13 +151,20 @@ public class MenuHandler {
                             String t = sc.nextLine();
                             tasks.createTask(eId, td, t);
                         } else if (pm == 2) {
+                            System.out.print("Department (e.g. Production): ");
+                            String dept = sc.nextLine().trim();
+                            System.out.print("Number of people to recruit: ");
+                            int count = Integer.parseInt(sc.nextLine());
                             System.out.print("Reason for Recruitment: ");
                             String r = sc.nextLine();
-                            hr.requestRecruitment(eId, "Production", r);
+                            hr.requestRecruitment(eId, dept, r, count);
                         } else if (pm == 3) {
+                            System.out.print("Requested Amount ($): ");
+                            double amount = Double.parseDouble(sc.nextLine());
                             System.out.print("Finance Request Details: ");
                             String d = sc.nextLine();
-                            finance.requestFinance(eId, "ProductionManager", d);
+                            String details = d + " [Requested $" + amount + "]";
+                            finance.requestFinance(eId, "ProductionManager", details);
                         } else if (pm == 4) {
                             tasks.listTasks(eId);
                             hr.listRecruitments(eId);
@@ -173,13 +192,20 @@ public class MenuHandler {
                             String t = sc.nextLine();
                             tasks.createTask(eId, td, t);
                         } else if (sm == 2) {
+                            System.out.print("Department (e.g. Production): ");
+                            String dept = sc.nextLine().trim();
+                            System.out.print("Number of people to recruit: ");
+                            int count = Integer.parseInt(sc.nextLine());
                             System.out.print("Reason for Recruitment: ");
                             String r = sc.nextLine();
-                            hr.requestRecruitment(eId, "Service", r);
+                            hr.requestRecruitment(eId, dept, r, count);
                         } else if (sm == 3) {
+                            System.out.print("Requested Amount ($): ");
+                            double amount = Double.parseDouble(sc.nextLine());
                             System.out.print("Finance Request Details: ");
                             String d = sc.nextLine();
-                            finance.requestFinance(eId, "ServiceManager", d);
+                            String details = d + " [Requested $" + amount + "]";
+                            finance.requestFinance(eId, "ServiceManager", details);
                         } else if (sm == 4) {
                             tasks.listTasks(eId);
                             hr.listRecruitments(eId);
@@ -190,28 +216,59 @@ public class MenuHandler {
                     }
                     break;
 
-                // -------------------- HR --------------------
+// -------------------- HR --------------------
                 case "HR":
                     System.out.println("\n[HR Menu]");
-                    System.out.println("1. View Recruitment Requests (Event)  2. Process Recruitment  3. Logout");
+                    System.out.println("1. View Recruitment Requests (Event)  2. Process Recruitment  3. View Departments  4. Logout");
                     int hrChoice = Integer.parseInt(sc.nextLine());
-                    if (hrChoice == 1 || hrChoice == 2) {
+
+                    if (hrChoice == 1 || hrChoice == 2 || hrChoice == 3) {
+                        // Step 1: List all events
                         events.listEvents();
                         System.out.print("Enter Event ID: ");
                         int eId = Integer.parseInt(sc.nextLine());
-                        hr.listRecruitments(eId);
 
-                        if (hrChoice == 2) {
+                        // Step 2: Show departments and their members first
+                        System.out.println();
+                        System.out.println("📋 Current Department Members for this Event:");
+                        events.getAllEvents().stream()
+                                .filter(ev -> ev.getId() == eId)
+                                .findFirst()
+                                .ifPresentOrElse(
+                                        EventRequest::printDepartments,
+                                        () -> System.out.println("⚠️ Event not found.")
+                                );
+
+                        System.out.println();
+
+                        // Step 3: Handle HR actions for that event
+                        if (hrChoice == 1) {
+                            hr.listRecruitments(eId);
+
+                        } else if (hrChoice == 2) {
+                            hr.listRecruitments(eId);
                             System.out.print("Enter Recruitment ID: ");
                             int id = Integer.parseInt(sc.nextLine());
-                            System.out.print("New Status: ");
+                            System.out.print("Decision (Approved/Rejected): ");
                             String st = sc.nextLine();
                             hr.processRecruitment(eId, id, st);
+
+                        } else if (hrChoice == 3) {
+                            // Just re-display department members for clarity
+                            events.getAllEvents().stream()
+                                    .filter(ev -> ev.getId() == eId)
+                                    .findFirst()
+                                    .ifPresentOrElse(
+                                            event -> {},
+                                            () -> System.out.println("⚠️ Event not found.")
+                                    );
                         }
+
                     } else {
                         active = false;
                     }
                     break;
+
 
                 // -------------------- VICE PRESIDENT --------------------
                 case "VicePresident":
