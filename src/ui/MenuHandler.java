@@ -85,19 +85,23 @@ public class MenuHandler {
                 // -------------------- FINANCIAL MANAGER --------------------
                 case "FinancialManager":
                     System.out.println("\n[Financial Manager Menu]");
-                    System.out.println("1. Approve/Reject Budgets  2. View Finance Requests  3. Logout");
+                    System.out.println("1. Approve/Reject Budgets  2. View Finance Requests by Event  3. Logout");
                     int fm = Integer.parseInt(sc.nextLine());
                     if (fm == 1) {
-//                        events.listEvents();
-                        finance.listFinances();
+                        events.listEvents();
+                        System.out.print("Enter Event ID: ");
+                        int eId = Integer.parseInt(sc.nextLine());
+                        finance.listFinances(eId);
                         System.out.print("Enter Finance ID to update: ");
-                        int id = Integer.parseInt(sc.nextLine());
-                        System.out.print("New Status: ");
+                        int fId = Integer.parseInt(sc.nextLine());
+                        System.out.print("New Status (Approved/Rejected): ");
                         String st = sc.nextLine();
-                        finance.processFinance(id, st);
-//                        events.updateStatus(id, st, "Reviewed by Finance Manager");
+                        finance.processFinance(eId, fId, st);
                     } else if (fm == 2) {
-                        finance.listFinances();
+                        events.listEvents();
+                        System.out.print("Enter Event ID: ");
+                        int eId = Integer.parseInt(sc.nextLine());
+                        finance.listFinances(eId);
                     } else {
                         active = false;
                     }
@@ -121,26 +125,32 @@ public class MenuHandler {
                 // -------------------- PRODUCTION MANAGER --------------------
                 case "ProductionManager":
                     System.out.println("\n[Production Manager Menu]");
-                    System.out.println("1. Assign Task  2. Request Recruitment  3. Request Finance  4. View All  5. Logout");
+                    System.out.println("1. Assign Task  2. Request Recruitment  3. Request Finance  4. View All (Event)  5. Logout");
                     int pm = Integer.parseInt(sc.nextLine());
-                    if (pm == 1) {
-                        System.out.print("Task Description: ");
-                        String td = sc.nextLine();
-                        System.out.print("Team Name: ");
-                        String t = sc.nextLine();
-                        tasks.assignTask(td, t);
-                    } else if (pm == 2) {
-                        System.out.print("Reason for Recruitment: ");
-                        String r = sc.nextLine();
-                        hr.requestRecruitment("Production", r);
-                    } else if (pm == 3) {
-                        System.out.print("Finance Request Details: ");
-                        String d = sc.nextLine();
-                        finance.requestFinance("ProductionManager", d);
-                    } else if (pm == 4) {
-                        tasks.listTasks();
-                        hr.listRecruitments();
-                        finance.listFinances();
+                    if (pm >= 1 && pm <= 4) {
+                        events.listEvents();
+                        System.out.print("Enter Event ID: ");
+                        int eId = Integer.parseInt(sc.nextLine());
+
+                        if (pm == 1) {
+                            System.out.print("Task Description: ");
+                            String td = sc.nextLine();
+                            System.out.print("Team Name: ");
+                            String t = sc.nextLine();
+                            tasks.createTask(eId, td, t);
+                        } else if (pm == 2) {
+                            System.out.print("Reason for Recruitment: ");
+                            String r = sc.nextLine();
+                            hr.requestRecruitment(eId, "Production", r);
+                        } else if (pm == 3) {
+                            System.out.print("Finance Request Details: ");
+                            String d = sc.nextLine();
+                            finance.requestFinance(eId, "ProductionManager", d);
+                        } else if (pm == 4) {
+                            tasks.listTasks(eId);
+                            hr.listRecruitments(eId);
+                            finance.listFinances(eId);
+                        }
                     } else {
                         active = false;
                     }
@@ -149,26 +159,32 @@ public class MenuHandler {
                 // -------------------- SERVICE MANAGER --------------------
                 case "ServiceManager":
                     System.out.println("\n[Service Manager Menu]");
-                    System.out.println("1. Assign Task  2. Request Recruitment  3. Request Finance  4. View All  5. Logout");
+                    System.out.println("1. Assign Task  2. Request Recruitment  3. Request Finance  4. View All (Event)  5. Logout");
                     int sm = Integer.parseInt(sc.nextLine());
-                    if (sm == 1) {
-                        System.out.print("Task Description: ");
-                        String td = sc.nextLine();
-                        System.out.print("Team Name: ");
-                        String t = sc.nextLine();
-                        tasks.assignTask(td, t);
-                    } else if (sm == 2) {
-                        System.out.print("Reason for Recruitment: ");
-                        String r = sc.nextLine();
-                        hr.requestRecruitment("Service", r);
-                    } else if (sm == 3) {
-                        System.out.print("Finance Request Details: ");
-                        String d = sc.nextLine();
-                        finance.requestFinance("ServiceManager", d);
-                    } else if (sm == 4) {
-                        tasks.listTasks();
-                        hr.listRecruitments();
-                        finance.listFinances();
+                    if (sm >= 1 && sm <= 4) {
+                        events.listEvents();
+                        System.out.print("Enter Event ID: ");
+                        int eId = Integer.parseInt(sc.nextLine());
+
+                        if (sm == 1) {
+                            System.out.print("Task Description: ");
+                            String td = sc.nextLine();
+                            System.out.print("Team Name: ");
+                            String t = sc.nextLine();
+                            tasks.createTask(eId, td, t);
+                        } else if (sm == 2) {
+                            System.out.print("Reason for Recruitment: ");
+                            String r = sc.nextLine();
+                            hr.requestRecruitment(eId, "Service", r);
+                        } else if (sm == 3) {
+                            System.out.print("Finance Request Details: ");
+                            String d = sc.nextLine();
+                            finance.requestFinance(eId, "ServiceManager", d);
+                        } else if (sm == 4) {
+                            tasks.listTasks(eId);
+                            hr.listRecruitments(eId);
+                            finance.listFinances(eId);
+                        }
                     } else {
                         active = false;
                     }
@@ -177,17 +193,21 @@ public class MenuHandler {
                 // -------------------- HR --------------------
                 case "HR":
                     System.out.println("\n[HR Menu]");
-                    System.out.println("1. View Recruitment Requests  2. Process Recruitment  3. Logout");
+                    System.out.println("1. View Recruitment Requests (Event)  2. Process Recruitment  3. Logout");
                     int hrChoice = Integer.parseInt(sc.nextLine());
-                    if (hrChoice == 1) {
-                        hr.listRecruitments();
-                    } else if (hrChoice == 2) {
-                        hr.listRecruitments();
-                        System.out.print("Enter Recruitment ID: ");
-                        int id = Integer.parseInt(sc.nextLine());
-                        System.out.print("New Status: ");
-                        String st = sc.nextLine();
-                        hr.processRecruitment(id, st);
+                    if (hrChoice == 1 || hrChoice == 2) {
+                        events.listEvents();
+                        System.out.print("Enter Event ID: ");
+                        int eId = Integer.parseInt(sc.nextLine());
+                        hr.listRecruitments(eId);
+
+                        if (hrChoice == 2) {
+                            System.out.print("Enter Recruitment ID: ");
+                            int id = Integer.parseInt(sc.nextLine());
+                            System.out.print("New Status: ");
+                            String st = sc.nextLine();
+                            hr.processRecruitment(eId, id, st);
+                        }
                     } else {
                         active = false;
                     }
@@ -196,13 +216,15 @@ public class MenuHandler {
                 // -------------------- VICE PRESIDENT --------------------
                 case "VicePresident":
                     System.out.println("\n[Vice President Menu]");
-                    System.out.println("1. View All Reports  2. Logout");
+                    System.out.println("1. View All Reports by Event  2. Logout");
                     int v = Integer.parseInt(sc.nextLine());
                     if (v == 1) {
                         events.listEvents();
-                        tasks.listTasks();
-                        hr.listRecruitments();
-                        finance.listFinances();
+                        System.out.print("Enter Event ID: ");
+                        int eId = Integer.parseInt(sc.nextLine());
+                        tasks.listTasks(eId);
+                        hr.listRecruitments(eId);
+                        finance.listFinances(eId);
                     } else {
                         active = false;
                     }

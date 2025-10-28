@@ -1,7 +1,7 @@
 package service;
 
-import model.Task;
-import java.util.List;
+import model.*;
+import java.util.Optional;
 
 public class TaskService {
     private final DataStore store;
@@ -10,33 +10,93 @@ public class TaskService {
         this.store = store;
     }
 
-    // Called by Production or Service Managers to assign new tasks to subteams
-    public void assignTask(String description, String assignedTo) {
-        store.tasks.add(new Task(description, assignedTo));
-        System.out.println("✅ Task assigned to " + assignedTo);
-    }
+    /**
+     * Create a brand new task and assign it to a team for a specific event.
+     */
+    public void createTask(int eventId, String description, String assignedTo) {
+        Optional<EventRequest> e = store.events.stream()
+                .filter(ev -> ev.getId() == eventId)
+                .findFirst();
 
-    // Called by any manager or team member to view current tasks
-    public void listTasks() {
-        if (store.tasks.isEmpty()) {
-            System.out.println("No tasks available.");
+        if (e.isPresent()) {
+            Task t = new Task(description, assignedTo);
+            e.get().addTask(t);
+            System.out.println("✅ New task created and assigned to " + assignedTo + " for Event#" + eventId);
         } else {
-            System.out.println("--- Task List ---");
-            for (Task t : store.tasks) {
-                System.out.println(t);
-            }
+            System.out.println("⚠️ Event not found with ID " + eventId);
         }
     }
 
-    // Called to mark a task as completed or update its status
-    public void updateTaskStatus(int id, String status) {
-        for (Task t : store.tasks) {
-            if (t.getId() == id) {
-                t.setStatus(status);
-                System.out.println("✅ Task #" + id + " updated to: " + status);
-                return;
-            }
+    /**
+     * Reassign an existing task (to a new team or member).
+     */
+    public void reassignTask(int eventId, int taskId, String newAssignee) {
+        Optional<EventRequest> e = store.events.stream()
+                .filter(ev -> ev.getId() == eventId)
+                .findFirst();
+
+        if (e.isEmpty()) {
+            System.out.println("⚠️ Event not found with ID " + eventId);
+            return;
         }
-        System.out.println("⚠️ No task found with ID " + id);
+
+        EventRequest event = e.get();
+        Optional<Task> t = event.getTasks().stream()
+                .filter(task -> task.getId() == taskId)
+                .findFirst();
+
+        if (t.isPresent()) {
+            Task task = t.get();
+            task.setStatus("Reassigned to " + newAssignee);
+            System.out.println("🔄 Task#" + taskId + " reassigned to " + newAssignee + " for Event#" + eventId);
+        } else {
+            System.out.println("⚠️ Task not found with ID " + taskId + " in Event#" + eventId);
+        }
+    }
+
+    /**
+     * Update the status of a task (e.g., Pending → In Progress → Completed).
+     */
+    public void updateTaskStatus(int eventId, int taskId, String status) {
+        Optional<EventRequest> e = store.events.stream()
+                .filter(ev -> ev.getId() == eventId)
+                .findFirst();
+
+        if (e.isEmpty()) {
+            System.out.println("⚠️ Event not found with ID " + eventId);
+            return;
+        }
+
+        EventRequest event = e.get();
+        Optional<Task> t = event.getTasks().stream()
+                .filter(task -> task.getId() == taskId)
+                .findFirst();
+
+        if (t.isPresent()) {
+            t.get().setStatus(status);
+            System.out.println("✅ Task#" + taskId + " status updated to: " + status);
+        } else {
+            System.out.println("⚠️ Task not found with ID " + taskId + " in Event#" + eventId);
+        }
+    }
+
+    /**
+     * List all tasks for a specific event.
+     */
+    public void listTasks(int eventId) {
+        store.events.stream()
+                .filter(e -> e.getId() == eventId)
+                .findFirst()
+                .ifPresentOrElse(
+                        e -> {
+                            if (e.getTasks().isEmpty())
+                                System.out.println("No tasks for this event.");
+                            else {
+                                System.out.println("--- Tasks for Event#" + e.getId() + " ---");
+                                e.getTasks().forEach(System.out::println);
+                            }
+                        },
+                        () -> System.out.println("⚠️ Event not found.")
+                );
     }
 }

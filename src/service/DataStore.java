@@ -6,9 +6,9 @@ import java.util.*;
 public class DataStore {
     public List<User> users = new ArrayList<>();
     public List<EventRequest> events = new ArrayList<>();
-    public List<Task> tasks = new ArrayList<>();
-    public List<RecruitmentRequest> recruits = new ArrayList<>();
-    public List<FinancialRequest> finances = new ArrayList<>();
+//    public List<Task> tasks = new ArrayList<>();
+//    public List<RecruitmentRequest> recruits = new ArrayList<>();
+//    public List<FinancialRequest> finances = new ArrayList<>();
 
     public DataStore() {
         users.add(new User("alice", "1234", "CustomerService"));

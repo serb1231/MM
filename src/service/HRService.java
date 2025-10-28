@@ -1,7 +1,7 @@
 package service;
 
-import model.RecruitmentRequest;
-import java.util.List;
+import model.*;
+import java.util.Optional;
 
 public class HRService {
     private final DataStore store;
@@ -10,33 +10,66 @@ public class HRService {
         this.store = store;
     }
 
-    // Called by Production/Service Managers to request new hires or outsourcing
-    public void requestRecruitment(String department, String reason) {
-        store.recruits.add(new RecruitmentRequest(department, reason));
-        System.out.println("✅ Recruitment request created for " + department);
-    }
+    /**
+     * Request a new recruitment for a specific event.
+     */
+    public void requestRecruitment(int eventId, String department, String reason) {
+        Optional<EventRequest> e = store.events.stream()
+                .filter(ev -> ev.getId() == eventId)
+                .findFirst();
 
-    // Called by HR to approve or reject a recruitment request
-    public void processRecruitment(int id, String status) {
-        for (RecruitmentRequest r : store.recruits) {
-            if (r.getId() == id) {
-                r.setStatus(status);
-                System.out.println("✅ Recruitment request #" + id + " updated to: " + status);
-                return;
-            }
-        }
-        System.out.println("⚠️ No recruitment request found with ID " + id);
-    }
-
-    // Lists all recruitment requests (for managers or HR view)
-    public void listRecruitments() {
-        if (store.recruits.isEmpty()) {
-            System.out.println("No recruitment requests available.");
+        if (e.isPresent()) {
+            RecruitmentRequest r = new RecruitmentRequest(department, reason);
+            e.get().addRecruitment(r);
+            System.out.println("✅ Recruitment request added for Event#" + eventId);
         } else {
-            System.out.println("--- Recruitment Requests ---");
-            for (RecruitmentRequest r : store.recruits) {
-                System.out.println(r);
-            }
+            System.out.println("⚠️ Event not found.");
         }
+    }
+
+    /**
+     * Process a recruitment request by approving or rejecting it.
+     */
+    public void processRecruitment(int eventId, int recruitmentId, String newStatus) {
+        Optional<EventRequest> e = store.events.stream()
+                .filter(ev -> ev.getId() == eventId)
+                .findFirst();
+
+        if (e.isEmpty()) {
+            System.out.println("⚠️ Event not found with ID " + eventId);
+            return;
+        }
+
+        EventRequest event = e.get();
+        Optional<RecruitmentRequest> r = event.getRecruitments().stream()
+                .filter(req -> req.getId() == recruitmentId)
+                .findFirst();
+
+        if (r.isPresent()) {
+            r.get().setStatus(newStatus);
+            System.out.println("✅ Recruitment#" + recruitmentId + " updated to: " + newStatus);
+        } else {
+            System.out.println("⚠️ Recruitment not found with ID " + recruitmentId + " in Event#" + eventId);
+        }
+    }
+
+    /**
+     * List all recruitment requests for a specific event.
+     */
+    public void listRecruitments(int eventId) {
+        store.events.stream()
+                .filter(e -> e.getId() == eventId)
+                .findFirst()
+                .ifPresentOrElse(
+                        e -> {
+                            if (e.getRecruitments().isEmpty())
+                                System.out.println("No recruitment requests for this event.");
+                            else {
+                                System.out.println("--- Recruitment Requests for Event#" + e.getId() + " ---");
+                                e.getRecruitments().forEach(System.out::println);
+                            }
+                        },
+                        () -> System.out.println("⚠️ Event not found.")
+                );
     }
 }
