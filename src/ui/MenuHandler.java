@@ -33,7 +33,7 @@ public class MenuHandler {
 
             User user = auth.login(u, p);
             if (user == null) {
-                System.out.println("❌ Invalid credentials!");
+                System.out.println("Invalid credentials!");
                 continue;
             }
 
@@ -49,7 +49,7 @@ public class MenuHandler {
             try {
                 return Integer.parseInt(line);
             } catch (NumberFormatException e) {
-                System.out.println("⚠️ Invalid input. Please enter a number.");
+                System.out.println("Invalid input. Please enter a number.");
                 line = sc.nextLine();
             }
         }
@@ -60,26 +60,26 @@ public class MenuHandler {
         System.out.println("1. Assign Task  2. Request Recruitment  3. Request Finance  4. View All (Event)  5. View Events  6. Logout");
         int pm = getIntInput(sc.nextLine());
         if (pm == 5) {
-            System.out.println("\n📋 All Events:");
+            System.out.println("\nAll Events:");
             events.listEvents();
             return true;
         }
         if (pm >= 1 && pm <= 4) {
             List<Integer> EventsId = events.listEvents();
             if (EventsId.isEmpty()) {
-                System.out.println("⚠️ No events available.");
+                System.out.println("No events available.");
                 return true;
             }
             System.out.print("Enter Event ID: ");
             int eId = getIntInput(sc.nextLine());
             if (!EventsId.contains(eId)) {
-                System.out.println("⚠️ Invalid Event ID.");
+                System.out.println("Invalid Event ID.");
                 return true;
             }
 
             if (pm == 1) {
                 // Show available teams for this event
-                System.out.println("\n📋 Available Teams for Event#" + eId + ":");
+                System.out.println("\nAvailable Teams for Event#" + eId + ":");
                 subteams.listTeams();
 
 
@@ -89,7 +89,7 @@ public class MenuHandler {
                 String td = sc.nextLine();
 
                 String assignedTeam = "Unassigned";
-                System.out.println("\n📋 Available Teams for Event#" + eId + ":");
+                System.out.println("\nAvailable Teams for Event#" + eId + ":");
                 subteams.listTeams();
                 System.out.print("Enter team name (exactly as shown): ");
                 assignedTeam = sc.nextLine().trim();
@@ -97,7 +97,7 @@ public class MenuHandler {
                 tasks.createTask(eId, td, assignedTeam);
             }
             else if (pm == 2) {
-                System.out.println("\n📋 Available Teams for Event#" + eId + ":");
+                System.out.println("\nAvailable Teams for Event#" + eId + ":");
                 subteams.listTeams();
                 System.out.print("Enter team Name (exactly as shown: ");
                 String dept = sc.nextLine().trim();
@@ -112,7 +112,7 @@ public class MenuHandler {
 
                 subteams.listMembers(dept);
 
-                System.out.println("✅ Recruitment request for SubTeam '" + dept + "' with " + count + " positions has been created.");
+                System.out.println("Recruitment request for SubTeam '" + dept + "' with " + count + " positions has been created.");
             }
             else if (pm == 3) {
                 System.out.print("Requested Amount ($): ");
@@ -191,7 +191,6 @@ public class MenuHandler {
                     int scs = getIntInput(sc.nextLine());
 
                     if (scs == 1) {
-                        // Step 1: Review new client event requests
                         List<Integer> pendingEvents = events.listPendingEventsForSCS();
 
 //                        if no pending events, break
@@ -204,13 +203,13 @@ public class MenuHandler {
 
 //                        if the event id is not in the pending events list
                         if (!pendingEvents.contains(eId)) {
-                            System.out.println("⚠️ Invalid Event ID.");
+                            System.out.println("Invalid Event ID.");
                             break;
                         }
 
                         EventRequest event = events.getEventById(eId);
                         if (event == null) {
-                            System.out.println("⚠️ Event not found.");
+                            System.out.println("Event not found.");
                             break;
                         }
 
@@ -220,26 +219,23 @@ public class MenuHandler {
 
                         if (decision.equalsIgnoreCase("Reject")) {
                             event.setStatus("Rejected by SCS");
-                            System.out.println("❌ Event request rejected. Client will be notified.");
+                            System.out.println("Event request rejected. Client will be notified.");
                         } else if (decision.equalsIgnoreCase("Approve")) {
                             event.setStatus("Approved by SCS → Pending FM Review");
-                            System.out.println("✅ Event approved and forwarded to Financial Manager.");
+                            System.out.println("Event approved and forwarded to Financial Manager.");
                         } else {
-                            System.out.println("⚠️ Invalid input. Must be Approve or Reject.");
+                            System.out.println("Invalid input. Must be Approve or Reject.");
                         }
 
                     } else if (scs == 2) {
-                        // Step 2: View all events
                         events.listAllEvents();
 
                     } else if (scs == 3) {
-                        // Step 3: View events that have passed all approvals
-                        System.out.println("\n📋 Events Approved by AM (Pending Client Notification):");
+                        System.out.println("\nEvents Approved by AM (Pending Client Notification):");
                         events.listPendingEventsForFinalSCS();
 
                     } else if (scs == 4) {
-                        // Step 4: Notify client or make final notes/changes
-                        System.out.println("\n📋 Events Approved by AM (Ready for Client Notification):");
+                        System.out.println("\nEvents Approved by AM (Ready for Client Notification):");
                         List<Integer> eventsPending = events.listPendingEventsForFinalSCS();
 
                         if (eventsPending.isEmpty()) {
@@ -250,18 +246,18 @@ public class MenuHandler {
                         int eId = getIntInput(sc.nextLine());
 
                         if (!eventsPending.contains(eId)) {
-                            System.out.println("⚠️ Invalid Event ID.");
+                            System.out.println("Invalid Event ID.");
                             break;
                         }
 
                         EventRequest event = events.getEventById(eId);
                         if (event == null) {
-                            System.out.println("⚠️ Event not found.");
+                            System.out.println("Event not found.");
                             break;
                         }
 
                         if (!event.getStatus().equalsIgnoreCase("Approved by AM → Notify SCS/Client")) {
-                            System.out.println("⚠️ This event is not ready for client notification.");
+                            System.out.println("This event is not ready for client notification.");
                             break;
                         }
 
@@ -269,21 +265,21 @@ public class MenuHandler {
                         int action = getIntInput(sc.nextLine());
 
                         if (action == 1) {
-                            System.out.println("📧 Client has been notified of approval for Event #" + eId + ".");
+                            System.out.println("Client has been notified of approval for Event #" + eId + ".");
                             event.setStatus("OK");
                         } else if (action == 2) {
                             System.out.print("Enter updated notes for the client: ");
                             String notes = sc.nextLine();
                             event.setNotes("Client Notes: " + notes);
-                            System.out.println("📝 Notes updated successfully.");
+                            System.out.println("Notes updated successfully.");
                         } else {
-                            System.out.println("⚠️ Invalid option. Choose 1 or 2.");
+                            System.out.println("Invalid option. Choose 1 or 2.");
                         }
 
                     } else if (scs == 5) {
                         active = false;
                     } else {
-                        System.out.println("⚠️ Invalid input. Choose between 1–5.");
+                        System.out.println("Invalid input. Choose between 1–5.");
                     }
                     break;
 
@@ -300,7 +296,7 @@ public class MenuHandler {
                             System.out.print("Enter Event ID: ");
                             int eId = getIntInput(sc.nextLine());
                             if (!EventsId.contains(eId)) {
-                                System.out.println("⚠️ Invalid Event ID.");
+                                System.out.println("Invalid Event ID.");
                                 break;
                             }
                             finance.listFinances(eId);
@@ -321,13 +317,13 @@ public class MenuHandler {
 
                         case "3":
                             // View events pending FM review
-                            System.out.println("\n📋 Events Pending Financial Review:");
+                            System.out.println("\nEvents Pending Financial Review:");
                             events.listPendingEventsForFM(); // reuse the same method
                             break;
 
                         case "4":
                             // Review & decide on a pending event
-                            System.out.println("\n📋 Events Pending Financial Review:");
+                            System.out.println("\nEvents Pending Financial Review:");
                             List<Integer> pendingEvents = events.listPendingEventsForFM();
 
                             if (pendingEvents.isEmpty()) {
@@ -337,13 +333,13 @@ public class MenuHandler {
                             System.out.print("\nEnter Event ID to review: ");
                             int pendingId = getIntInput(sc.nextLine());
                             if (!pendingEvents.contains(pendingId)) {
-                                System.out.println("⚠️ Invalid Event ID.");
+                                System.out.println("Invalid Event ID.");
                                 break;
                             }
                             EventRequest pendingEvent = events.getEventById(pendingId);
 
                             if (pendingEvent == null) {
-                                System.out.println("⚠️ Event not found.");
+                                System.out.println("Event not found.");
                                 break;
                             }
 
@@ -356,13 +352,13 @@ public class MenuHandler {
                             if (decision.equalsIgnoreCase("Approve")) {
                                 pendingEvent.setStatus("Approved by FM → Pending Admin Approval");
                                 pendingEvent.setNotes("FM feedback: " + feedback);
-                                System.out.println("✅ Event approved and forwarded to Admin Manager.");
+                                System.out.println("Event approved and forwarded to Admin Manager.");
                             } else if (decision.equalsIgnoreCase("Reject")) {
                                 pendingEvent.setStatus("Rejected by FM");
                                 pendingEvent.setNotes("FM feedback: " + feedback);
-                                System.out.println("❌ Event rejected by Financial Manager.");
+                                System.out.println("Event rejected by Financial Manager.");
                             } else {
-                                System.out.println("⚠️ Invalid input. Must be Approve or Reject.");
+                                System.out.println("Invalid input. Must be Approve or Reject.");
                             }
                             break;
 
@@ -371,7 +367,7 @@ public class MenuHandler {
                             break;
 
                         default:
-                            System.out.println("⚠️ Invalid input. Please choose 1–5.");
+                            System.out.println("Invalid input. Please choose 1–5.");
                             break;
                     }
                     break;
@@ -387,13 +383,13 @@ public class MenuHandler {
                     switch (amInput) {
                         case "1":
                             // Show all events waiting for AM approval
-                            System.out.println("\n📋 Events Pending Final Approval (from FM):");
+                            System.out.println("\nEvents Pending Final Approval (from FM):");
                             events.listPendingEventsForAM();
                             break;
 
                         case "2":
                             // Review a specific event and approve/reject
-                            System.out.println("\n📋 Events Pending Final Approval (from FM):");
+                            System.out.println("\nEvents Pending Final Approval (from FM):");
                             List<Integer> eventsPending = events.listPendingEventsForAM();
 
                             if (eventsPending.isEmpty()) {
@@ -404,18 +400,18 @@ public class MenuHandler {
                             int eId = getIntInput(sc.nextLine());
 
                             if (!eventsPending.contains(eId)) {
-                                System.out.println("⚠️ Invalid Event ID.");
+                                System.out.println("Invalid Event ID.");
                                 break;
                             }
 
                             EventRequest event = events.getEventById(eId);
                             if (event == null) {
-                                System.out.println("⚠️ Event not found.");
+                                System.out.println("Event not found.");
                                 break;
                             }
 
 //                            if (!event.getStatus().equalsIgnoreCase("Approved by FM → Pending Admin Approval")) {
-//                                System.out.println("⚠️ This event is not pending Admin approval.");
+//                                System.out.println("This event is not pending Admin approval.");
 //                                break;
 //                            }
 
@@ -429,13 +425,13 @@ public class MenuHandler {
                             if (decision.equalsIgnoreCase("Approve")) {
                                 event.setStatus("Approved by AM → Notify SCS/Client");
                                 event.setNotes("AM Decision: " + notes);
-                                System.out.println("✅ Event finally approved. SCS will notify client.");
+                                System.out.println("Event finally approved. SCS will notify client.");
                             } else if (decision.equalsIgnoreCase("Reject")) {
                                 event.setStatus("Rejected by AM");
                                 event.setNotes("AM Decision: " + notes);
-                                System.out.println("❌ Event rejected. SCS will notify client.");
+                                System.out.println("Event rejected. SCS will notify client.");
                             } else {
-                                System.out.println("⚠️ Invalid input. Must be Approve or Reject.");
+                                System.out.println("Invalid input. Must be Approve or Reject.");
                             }
                             break;
 
@@ -444,7 +440,7 @@ public class MenuHandler {
                             break;
 
                         default:
-                            System.out.println("⚠️ Invalid input. Please choose 1–3.");
+                            System.out.println("Invalid input. Please choose 1–3.");
                             break;
                     }
                     break;
@@ -469,20 +465,18 @@ public class MenuHandler {
                     int hrChoice = getIntInput(sc.nextLine());
 
                     if (hrChoice == 1 || hrChoice == 2 || hrChoice == 3) {
-                        // Step 1: List all events
                         events.listEvents();
                         System.out.print("Enter Event ID: ");
                         int eId = getIntInput(sc.nextLine());
 
-                        // Step 2: Show departments and their members first
                         System.out.println();
-                        System.out.println("📋 Current Department Members for this Event:");
+                        System.out.println("Current Department Members for this Event:");
                         events.getAllEvents().stream()
                                 .filter(ev -> ev.getId() == eId)
                                 .findFirst()
                                 .ifPresentOrElse(
                                         event -> {subteams.listAllMembers();},
-                                        () -> System.out.println("⚠️ Event not found.")
+                                        () -> System.out.println("Event not found.")
                                 );
 
                         System.out.println();
@@ -499,7 +493,6 @@ public class MenuHandler {
                             hr.processRecruitment(eId, id, st);
 
                         } else if (hrChoice == 3) {
-                            // --- Manage SubTeams ---
                             subteams.listTeams();
                             System.out.print("Select SubTeam Name: ");
                             String tName = sc.nextLine();
@@ -556,7 +549,7 @@ public class MenuHandler {
 
                 // -------------------- DEFAULT --------------------
                 default:
-                    System.out.println("⚠️ Unknown role: " + u.getRole());
+                    System.out.println("Unknown role: " + u.getRole());
                     active = false;
                     break;
             }
