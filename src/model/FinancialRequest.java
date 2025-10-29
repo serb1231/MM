@@ -16,6 +16,14 @@ public class FinancialRequest {
 
     public int getId() { return id; }
     public void setStatus(String status) { this.status = status; }
+    public String getStatus() { return status; }
+
+    //    getter and setter for requester and details
+    public String getRequester() { return requester; }
+    public void setRequester(String requester) { this.requester = requester; }
+    public String getDetails() { return details; }
+    public void setDetails(String details) { this.details = details; }
+
 
     @Override
     public String toString() {
