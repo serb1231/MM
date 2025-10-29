@@ -18,6 +18,7 @@ public class RecruitmentRequest {
 
     public int getId() { return id; }
     public void setStatus(String status) { this.status = status; }
+    public String getStatus() { return status; }
 
     @Override
     public String toString() {

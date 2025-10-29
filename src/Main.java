@@ -1,3 +1,4 @@
+import model.EventService;
 import service.*;
 import ui.MenuHandler;
 

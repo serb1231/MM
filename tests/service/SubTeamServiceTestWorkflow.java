@@ -1,6 +1,6 @@
 package service;
 
-import model.EventRequest;
+import model.EventService;
 import model.SubTeamRequest;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SubTeamServiceTest {
+class SubTeamServiceTestWorkflow {
 
     private DataStore dataStore;
     private SubTeamService subTeamService;

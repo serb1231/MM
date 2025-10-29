@@ -1,9 +1,6 @@
 package service;
 
-import model.EventRequest;
-import model.FinancialRequest;
-import model.RecruitmentRequest;
-import model.SubTeamRequest;
+import model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +11,7 @@ import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DepartmentProcessTest {
+class DepartmentProcessTestWorkflow {
 
     private DataStore dataStore;
     private EventService eventService;
@@ -49,7 +46,7 @@ class DepartmentProcessTest {
     /** Helper to create an "OK" event */
     private EventRequest createOKEvent() {
         eventService.createEvent("Client", "Event");
-        EventRequest event = eventService.getEventById(1);
+        EventRequest event = eventService.getAllEvents().get(dataStore.events.size() - 1);
         event.setStatus("OK");
         return event;
     }
@@ -58,7 +55,7 @@ class DepartmentProcessTest {
     @DisplayName("US 3.1: Process Recruitment Request (Approve)")
     void testProcessRecruitment_Approve() {
         // Arrange
-        EventRequest event = createOKEvent();
+        EventRequest event = dataStore.events.getLast();
         hrService.requestRecruitment(event.getId(), "Security", "Need 2 guards", 2);
         RecruitmentRequest req = event.getRecruitments().get(0);
         

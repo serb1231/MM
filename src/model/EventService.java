@@ -1,6 +1,6 @@
-package service;
+package model;
 
-import model.*;
+import service.DataStore;
 
 import java.util.ArrayList;
 import java.util.List;

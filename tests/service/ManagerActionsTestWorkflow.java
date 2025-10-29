@@ -1,6 +1,7 @@
 package service;
 
 import model.EventRequest;
+import model.EventService;
 import model.SubTeamRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ManagerActionsTest {
+class ManagerActionsTestWorkflow {
 
     private DataStore dataStore;
     private EventService eventService;

@@ -1,6 +1,7 @@
 package service;
 
 import model.EventRequest;
+import model.EventService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -9,7 +10,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class EventServiceTest {
+class EventServiceTestWorkflow {
 
     private DataStore dataStore;
     private EventService eventService;
