@@ -40,15 +40,12 @@ class ManagerActionsTestWorkflow {
     @Test
     @DisplayName("US 2.1: Assign Task to Sub-Team")
     void testAssignTaskToSubTeam() {
-        // Arrange
         EventRequest event = createOKEvent();
         SubTeamRequest cateringTeam = dataStore.subteams.get("Catering");
         assertTrue(cateringTeam.getTasks().isEmpty()); // Pre-condition
 
-        // Act
         taskService.createTask(event.getId(), "Prepare buffet", "Catering");
 
-        // Assert
         assertEquals(1, event.getTasks().size());
         assertEquals(1, cateringTeam.getTasks().size());
         assertEquals("Prepare buffet", event.getTasks().get(0).toString());
@@ -57,15 +54,12 @@ class ManagerActionsTestWorkflow {
     @Test
     @DisplayName("US 2.1: Assign Task Fails for Non-OK Event")
     void testAssignTaskFailsForPendingEvent() {
-        // Arrange
         eventService.createEvent("Pending Client", "Pending Event"); // Status is "Pending"
         EventRequest event = eventService.getEventById(1);
         SubTeamRequest cateringTeam = dataStore.subteams.get("Catering");
 
-        // Act
         taskService.createTask(event.getId(), "This should not work", "Catering");
 
-        // Assert
         assertTrue(event.getTasks().isEmpty());
         assertTrue(cateringTeam.getTasks().isEmpty());
     }
@@ -73,14 +67,11 @@ class ManagerActionsTestWorkflow {
     @Test
     @DisplayName("US 2.2: Request Recruitment")
     void testRequestRecruitment() {
-        // Arrange
         EventRequest event = createOKEvent();
         assertTrue(event.getRecruitments().isEmpty());
 
-        // Act
         hrService.requestRecruitment(event.getId(), "Logistics", "Need 5 drivers", 5);
 
-        // Assert
         assertEquals(1, event.getRecruitments().size());
         assertEquals("Logistics", event.getRecruitments().get(0).getDepartment());
         assertEquals(5, event.getRecruitments().get(0).getNumberOfPositions());
@@ -90,15 +81,12 @@ class ManagerActionsTestWorkflow {
     @Test
     @DisplayName("US 2.3: Request Financial Adjustment")
     void testRequestFinancialAdjustment() {
-        // Arrange
         EventRequest event = createOKEvent();
         assertTrue(event.getFinances().isEmpty());
 
-        // Act
         String details = "New lighting rig [Requested $1500]";
         financeService.requestFinance(event.getId(), "ProductionManager", details);
 
-        // Assert
         assertEquals(1, event.getFinances().size());
         assertEquals("Pending Finance", event.getFinances().get(0).toString());
     }

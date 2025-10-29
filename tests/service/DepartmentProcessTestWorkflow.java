@@ -34,7 +34,6 @@ class DepartmentProcessTestWorkflow {
 
     @AfterEach
     void tearDown() {
-        // Restore System.in
         System.setIn(originalIn);
     }
 
@@ -43,7 +42,6 @@ class DepartmentProcessTestWorkflow {
         System.setIn(testIn);
     }
 
-    /** Helper to create an "OK" event */
     private EventRequest createOKEvent() {
         eventService.createEvent("Client", "Event");
         EventRequest event = eventService.getAllEvents().get(dataStore.events.size() - 1);
@@ -54,7 +52,6 @@ class DepartmentProcessTestWorkflow {
     @Test
     @DisplayName("US 3.1: Process Recruitment Request (Approve)")
     void testProcessRecruitment_Approve() {
-        // Arrange
         EventRequest event = dataStore.events.getLast();
         hrService.requestRecruitment(event.getId(), "Security", "Need 2 guards", 2);
         RecruitmentRequest req = event.getRecruitments().get(0);
@@ -63,10 +60,8 @@ class DepartmentProcessTestWorkflow {
         String input = "New Guard 1\nNew Guard 2\n";
         provideInput(input);
 
-        // Act
         hrService.processRecruitment(event.getId(), req.getId(), "Approve");
 
-        // Assert
         SubTeamRequest team = dataStore.subteams.get("Security");
         assertEquals(2, team.getMembers().size());
         assertEquals("New Guard 1", team.getMembers().get(0));
@@ -78,15 +73,12 @@ class DepartmentProcessTestWorkflow {
     @Test
     @DisplayName("US 3.1: Process Recruitment Request (Reject)")
     void testProcessRecruitment_Reject() {
-        // Arrange
         EventRequest event = createOKEvent();
         hrService.requestRecruitment(event.getId(), "Security", "Need 2 guards", 2);
         RecruitmentRequest req = event.getRecruitments().get(0);
 
-        // Act
         hrService.processRecruitment(event.getId(), req.getId(), "Reject");
 
-        // Assert
         SubTeamRequest team = dataStore.subteams.get("Security");
         assertTrue(team.getMembers().isEmpty());
         assertEquals(0, event.getNumberOfWorkers());
@@ -96,14 +88,11 @@ class DepartmentProcessTestWorkflow {
     @Test
     @DisplayName("US 3.2: Manage Sub-Team Members")
     void testManageSubTeamMembers() {
-        // Arrange
         SubTeamRequest team = dataStore.subteams.get("Decoration");
         assertTrue(team.getMembers().isEmpty());
 
-        // Act
         subTeamService.addMember("Decoration", "Florist");
 
-        // Assert
         assertEquals(1, team.getMembers().size());
         assertEquals("Florist", team.getMembers().get(0));
     }
@@ -111,20 +100,16 @@ class DepartmentProcessTestWorkflow {
     @Test
     @DisplayName("US 3.3: Process Financial Request (Approve)")
     void testProcessFinancialRequest_Approve() {
-        // Arrange
         EventRequest event = createOKEvent();
         financeService.requestFinance(event.getId(), "PM", "Need $500");
         FinancialRequest req = event.getFinances().get(0);
         assertEquals(0.0, event.getBudget()); // Pre-condition
 
-        // Mock user input for the amount
         String input = "500.0\n";
         provideInput(input);
 
-        // Act
         financeService.processFinance(event.getId(), req.getId(), "Approved");
 
-        // Assert
         assertEquals(500.0, event.getBudget());
         assertEquals("Approved - $500.0 added", req.getStatus());
     }
@@ -132,16 +117,13 @@ class DepartmentProcessTestWorkflow {
     @Test
     @DisplayName("US 3.3: Process Financial Request (Reject)")
     void testProcessFinancialRequest_Reject() {
-        // Arrange
         EventRequest event = createOKEvent();
         financeService.requestFinance(event.getId(), "PM", "Need $500");
         FinancialRequest req = event.getFinances().get(0);
         assertEquals(0.0, event.getBudget());
 
-        // Act
         financeService.processFinance(event.getId(), req.getId(), "Rejected");
 
-        // Assert
         assertEquals(0.0, event.getBudget()); // Budget remains 0
         assertEquals("Rejected", req.getStatus());
     }
@@ -149,19 +131,16 @@ class DepartmentProcessTestWorkflow {
     @Test
     @DisplayName("US 3.3: Process Financial Request (Approve, Invalid Amount)")
     void testProcessFinancialRequest_Approve_InvalidAmount() {
-        // Arrange
         EventRequest event = createOKEvent();
         financeService.requestFinance(event.getId(), "PM", "Need $500");
         FinancialRequest req = event.getFinances().get(0);
 
-        // Mock invalid user input
         String input = "not-a-number\n";
         provideInput(input);
 
-        // Act
         financeService.processFinance(event.getId(), req.getId(), "Approved");
 
-        // Assert
+
         assertEquals(0.0, event.getBudget()); // Budget remains 0
         // Status remains pending because the method returns early
         assertEquals("Pending Finance", req.getStatus());
