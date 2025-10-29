@@ -18,7 +18,7 @@ public class SubTeamService {
     public void listMembers(String teamName) {
         SubTeamRequest team = store.subteams.get(teamName);
         if (team == null) {
-            System.out.println("⚠️ No such team found.");
+            System.out.println("No such team found.");
             return;
         }
 
@@ -43,27 +43,27 @@ public class SubTeamService {
     public void addMember(String teamName, String newMember) {
         SubTeamRequest team = store.subteams.get(teamName);
         if (team == null) {
-            System.out.println("⚠️ No such team.");
+            System.out.println("No such team.");
             return;
         }
         team.addMember(newMember);
-        System.out.println("✅ Added " + newMember + " to " + teamName);
+        System.out.println("Added " + newMember + " to " + teamName);
     }
 
     public void assignTask(String teamName, Task task) {
         SubTeamRequest team = store.subteams.get(teamName);
         if (team == null) {
-            System.out.println("⚠️ Team not found.");
+            System.out.println("Team not found.");
             return;
         }
         team.addTask(task);
-        System.out.println("✅ Task assigned to " + teamName);
+        System.out.println("Task assigned to " + teamName);
     }
 
     public void listTasks(String teamName) {
         SubTeamRequest team = store.subteams.get(teamName);
         if (team == null) {
-            System.out.println("⚠️ No such team.");
+            System.out.println("No such team.");
             return;
         }
         System.out.println("\n--- Tasks for " + teamName + " ---");
@@ -74,7 +74,7 @@ public class SubTeamService {
     public void respondToTask(String teamName, int taskId, boolean accepted, String reason) {
         SubTeamRequest team = store.subteams.get(teamName);
         if (team == null) {
-            System.out.println("⚠️ Team not found.");
+            System.out.println("Team not found.");
             return;
         }
 
@@ -83,12 +83,12 @@ public class SubTeamService {
                 .findFirst();
 
         if (t.isEmpty()) {
-            System.out.println("⚠️ Task not found.");
+            System.out.println("Task not found.");
             return;
         }
 
-        String status = accepted ? "Accepted ✅" : "Rejected ❌ (" + reason + ")";
+        String status = accepted ? "Accepted" : "Rejected (" + reason + ")";
         t.get().setStatus(status);
-        System.out.println("📝 Task#" + t.get().getId() + " marked as " + status);
+        System.out.println("Task#" + t.get().getId() + " marked as " + status);
     }
 }

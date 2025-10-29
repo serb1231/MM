@@ -23,9 +23,9 @@ public class HRService {
         if (e.isPresent()) {
             RecruitmentRequest r = new RecruitmentRequest(department, reason, numberOfPositions);
             e.get().addRecruitment(r);
-            System.out.println("✅ Recruitment request added for Event#" + eventId);
+            System.out.println("Recruitment request added for Event#" + eventId);
         } else {
-            System.out.println("⚠️ Event not found.");
+            System.out.println("Event not found.");
         }
     }
 
@@ -39,7 +39,7 @@ public class HRService {
                 .findFirst();
 
         if (e.isEmpty()) {
-            System.out.println("⚠️ Event not found with ID " + eventId);
+            System.out.println("Event not found with ID " + eventId);
             return;
         }
 
@@ -55,7 +55,7 @@ public class HRService {
                     newStatus.equalsIgnoreCase("Yes");
 
             if (approved) {
-                System.out.println("✅ Recruitment approved for department: " + req.getDepartment());
+                System.out.println("Recruitment approved for department: " + req.getDepartment());
                 List<String> newMembers = new ArrayList<>();
 
                 for (int i = 1; i <= req.getNumberOfPositions(); i++) {
@@ -67,9 +67,9 @@ public class HRService {
                         SubTeamRequest team = store.subteams.get(req.getDepartment());
                         if (team != null) {
                             team.addMember(member);
-                            System.out.println("✅ Added " + member + " to " + req.getDepartment());
+                            System.out.println("Added " + member + " to " + req.getDepartment());
                         } else {
-                            System.out.println("⚠️ Department " + req.getDepartment() + " not found in SubTeams.");
+                            System.out.println("Department " + req.getDepartment() + " not found in SubTeams.");
                         }
                     }
                 }
@@ -79,12 +79,12 @@ public class HRService {
                 System.out.println("👥 Added " + newMembers.size() + " new members to " + req.getDepartment());
             } else {
                 req.setStatus("Rejected");
-                System.out.println("❌ Recruitment#" + recruitmentId + " has been rejected.");
+                System.out.println("Recruitment#" + recruitmentId + " has been rejected.");
             }
 
-            System.out.println("✅ Recruitment#" + recruitmentId + " updated to: " + req.toString());
+            System.out.println("Recruitment#" + recruitmentId + " updated to: " + req.toString());
         } else {
-            System.out.println("⚠️ Recruitment not found with ID " + recruitmentId + " in Event#" + eventId);
+            System.out.println("Recruitment not found with ID " + recruitmentId + " in Event#" + eventId);
         }
     }
 
@@ -105,7 +105,7 @@ public class HRService {
                                 e.getRecruitments().forEach(System.out::println);
                             }
                         },
-                        () -> System.out.println("⚠️ Event not found.")
+                        () -> System.out.println("Event not found.")
                 );
     }
 }

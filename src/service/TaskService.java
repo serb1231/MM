@@ -21,12 +21,12 @@ public class TaskService {
                 .findFirst();
 
         if (e.isEmpty()) {
-            System.out.println("⚠️ Event not found.");
+            System.out.println("Event not found.");
             return;
         }
 
         if (!store.subteams.containsKey(assignedTo)) {
-            System.out.println("⚠️ Invalid team name. Use one of: " + store.subteams.keySet());
+            System.out.println("Invalid team name. Use one of: " + store.subteams.keySet());
             return;
         }
 
@@ -35,7 +35,7 @@ public class TaskService {
 
         store.subteams.get(assignedTo).addTask(t);
 
-        System.out.println("✅ Task created and assigned to " + assignedTo + " for Event#" + eventId);
+        System.out.println("Task created and assigned to " + assignedTo + " for Event#" + eventId);
     }
 
 //    /**
@@ -48,7 +48,7 @@ public class TaskService {
 //                .findFirst();
 //
 //        if (e.isEmpty()) {
-//            System.out.println("⚠️ Event not found with ID " + eventId);
+//            System.out.println("Event not found with ID " + eventId);
 //            return;
 //        }
 //
@@ -58,7 +58,7 @@ public class TaskService {
 //                .findFirst();
 //
 //        if (tOpt.isEmpty()) {
-//            System.out.println("⚠️ Task not found with ID " + taskId + " in Event#" + eventId);
+//            System.out.println("Task not found with ID " + taskId + " in Event#" + eventId);
 //            return;
 //        }
 //
@@ -78,7 +78,7 @@ public class TaskService {
 //            store.subteams.get(newAssignee).addTask(task);
 //        }
 //
-//        System.out.println("🔄 Task#" + taskId + " reassigned to " + newAssignee + " for Event#" + eventId);
+//        System.out.println("Task#" + taskId + " reassigned to " + newAssignee + " for Event#" + eventId);
 //    }
 
     /**
@@ -91,7 +91,7 @@ public class TaskService {
                 .findFirst();
 
         if (e.isEmpty()) {
-            System.out.println("⚠️ Event not found with ID " + eventId);
+            System.out.println("Event not found with ID " + eventId);
             return;
         }
 
@@ -101,13 +101,13 @@ public class TaskService {
                 .findFirst();
 
         if (tOpt.isEmpty()) {
-            System.out.println("⚠️ Task not found with ID " + taskId + " in Event#" + eventId);
+            System.out.println("Task not found with ID " + taskId + " in Event#" + eventId);
             return;
         }
 
         Task task = tOpt.get();
         task.setStatus(status);
-        System.out.println("✅ Task#" + taskId + " status updated to: " + status);
+        System.out.println("Task#" + taskId + " status updated to: " + status);
     }
 
     /**
@@ -127,7 +127,7 @@ public class TaskService {
                                 e.getTasks().forEach(System.out::println);
                             }
                         },
-                        () -> System.out.println("⚠️ Event not found.")
+                        () -> System.out.println("Event not found.")
                 );
     }
 }
