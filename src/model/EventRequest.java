@@ -24,7 +24,7 @@ public class EventRequest {
         this.id = counter++;
         this.clientName = clientName;
         this.eventType = eventType;
-        this.status = "New";
+        this.status = "Pending";
         this.notes = "";
         this.budget = 0.0;
         this.numberOfWorkers = 0;
