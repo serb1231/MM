@@ -14,6 +14,7 @@ public class FinanceService {
     public void requestFinance(int eventId, String requester, String details) {
         Optional<EventRequest> e = store.events.stream()
                 .filter(ev -> ev.getId() == eventId)
+                .filter(ev -> ev.getStatus() != null && ev.getStatus().contains("OK"))
                 .findFirst();
 
         if (e.isPresent()) {
@@ -28,6 +29,7 @@ public class FinanceService {
     public void processFinance(int eventId, int financeId, String decision) {
         Optional<EventRequest> e = store.events.stream()
                 .filter(ev -> ev.getId() == eventId)
+                .filter(ev -> ev.getStatus() != null && ev.getStatus().contains("OK"))
                 .findFirst();
 
         if (e.isPresent()) {
@@ -72,6 +74,7 @@ public class FinanceService {
     public void listFinances(int eventId) {
         store.events.stream()
                 .filter(e -> e.getId() == eventId)
+                .filter(e -> e.getStatus() != null && e.getStatus().contains("OK"))
                 .findFirst()
                 .ifPresentOrElse(
                         e -> {

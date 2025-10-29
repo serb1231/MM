@@ -17,6 +17,7 @@ public class TaskService {
     public void createTask(int eventId, String description, String assignedTo) {
         Optional<EventRequest> e = store.events.stream()
                 .filter(ev -> ev.getId() == eventId)
+                .filter(ev -> ev.getStatus() != null && ev.getStatus().contains("OK"))
                 .findFirst();
 
         if (e.isEmpty()) {
@@ -43,6 +44,7 @@ public class TaskService {
 //    public void reassignTask(int eventId, int taskId, String newAssignee) {
 //        Optional<EventRequest> e = store.events.stream()
 //                .filter(ev -> ev.getId() == eventId)
+//                    .filter(ev -> ev.getStatus() != null && ev.getStatus().contains("OK"))
 //                .findFirst();
 //
 //        if (e.isEmpty()) {
@@ -85,6 +87,7 @@ public class TaskService {
     public void updateTaskStatus(int eventId, int taskId, String status) {
         Optional<EventRequest> e = store.events.stream()
                 .filter(ev -> ev.getId() == eventId)
+                .filter(ev -> ev.getStatus() != null && ev.getStatus().contains("OK"))
                 .findFirst();
 
         if (e.isEmpty()) {
@@ -113,6 +116,7 @@ public class TaskService {
     public void listTasks(int eventId) {
         store.events.stream()
                 .filter(e -> e.getId() == eventId)
+                .filter(ev -> ev.getStatus() != null && ev.getStatus().contains("OK"))
                 .findFirst()
                 .ifPresentOrElse(
                         e -> {

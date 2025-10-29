@@ -42,48 +42,61 @@ public class EventService {
         return list;
     }
 
-    public void listPendingEventsForSCS() {
+//    return a list of event id's that exist and are pending
+    public List<Integer> listPendingEventsForSCS() {
         boolean found = false;
+        List<Integer> list = new ArrayList<>();
         for (EventRequest e : store.events) {
             if (e.getStatus().equalsIgnoreCase("Pending")) {
                 System.out.println(e);
+                list.add(e.getId());
                 found = true;
             }
         }
         if (!found) System.out.println("No pending events.");
+        return list;
     }
 
-    public void listPendingEventsForFM() {
+    public List<Integer> listPendingEventsForFM() {
         boolean found = false;
+        List<Integer> list = new ArrayList<>();
         for (EventRequest e : store.events) {
             if (e.getStatus().equalsIgnoreCase("Approved by SCS → Pending FM Review")) {
                 System.out.println(e);
                 found = true;
+                list.add(e.getId());
             }
         }
         if (!found) System.out.println("No events approved by SCS.");
+        return list;
     }
 
-    public void listPendingEventsForFinalSCS() {
+    public List<Integer> listPendingEventsForFinalSCS() {
         boolean found = false;
+        List<Integer> list = new ArrayList<>();
         for (EventRequest e : store.events) {
             if (e.getStatus().equalsIgnoreCase("Approved by AM → Notify SCS/Client")) {
                 System.out.println(e);
                 found = true;
+                list.add(e.getId());
             }
         }
         if (!found) System.out.println("No events approved by SCS.");
+        return list;
     }
 
-    public void listPendingEventsForAM() {
+    public List<Integer> listPendingEventsForAM() {
         boolean found = false;
+        List<Integer> list = new ArrayList<>();
         for (EventRequest e : store.events) {
             if (e.getStatus().equalsIgnoreCase("Approved by FM → Pending Admin Approval")) {
                 System.out.println(e);
                 found = true;
+                list.add(e.getId());
             }
         }
         if (!found) System.out.println("No events approved by SCS.");
+        return list;
     }
 
     public void updateStatus(int id, String status, String notes) {

@@ -186,15 +186,27 @@ public class MenuHandler {
                 // -------------------- SENIOR CUSTOMER SERVICE --------------------
                 case "SeniorCS":
                     System.out.println("\n[Senior Customer Service Menu]");
-                    System.out.println("1. Review Pending Events  2. View All Events  3. View Events Approved by AM  4. Notify Client / Modify Final Events  5. Logout");
+                    System.out.println("1. Review Pending Events  2. View all Events  3. View Events Approved by AM  4. Notify Client / Modify Final Events  5. Logout");
 
                     int scs = getIntInput(sc.nextLine());
 
                     if (scs == 1) {
                         // Step 1: Review new client event requests
-                        events.listPendingEventsForSCS();
+                        List<Integer> pendingEvents = events.listPendingEventsForSCS();
+
+//                        if no pending events, break
+                        if (pendingEvents.isEmpty()) {
+                            break;
+                        }
+
                         System.out.print("Enter Event ID to review: ");
                         int eId = getIntInput(sc.nextLine());
+
+//                        if the event id is not in the pending events list
+                        if (!pendingEvents.contains(eId)) {
+                            System.out.println("⚠️ Invalid Event ID.");
+                            break;
+                        }
 
                         EventRequest event = events.getEventById(eId);
                         if (event == null) {
@@ -218,7 +230,7 @@ public class MenuHandler {
 
                     } else if (scs == 2) {
                         // Step 2: View all events
-                        events.listEvents();
+                        events.listAllEvents();
 
                     } else if (scs == 3) {
                         // Step 3: View events that have passed all approvals
@@ -228,10 +240,19 @@ public class MenuHandler {
                     } else if (scs == 4) {
                         // Step 4: Notify client or make final notes/changes
                         System.out.println("\n📋 Events Approved by AM (Ready for Client Notification):");
-                        events.listPendingEventsForFinalSCS();
+                        List<Integer> eventsPending = events.listPendingEventsForFinalSCS();
+
+                        if (eventsPending.isEmpty()) {
+                            break;
+                        }
 
                         System.out.print("\nEnter Event ID to process: ");
                         int eId = getIntInput(sc.nextLine());
+
+                        if (!eventsPending.contains(eId)) {
+                            System.out.println("⚠️ Invalid Event ID.");
+                            break;
+                        }
 
                         EventRequest event = events.getEventById(eId);
                         if (event == null) {
@@ -307,10 +328,18 @@ public class MenuHandler {
                         case "4":
                             // Review & decide on a pending event
                             System.out.println("\n📋 Events Pending Financial Review:");
-                            events.listPendingEventsForFM();
+                            List<Integer> pendingEvents = events.listPendingEventsForFM();
+
+                            if (pendingEvents.isEmpty()) {
+                                break;
+                            }
 
                             System.out.print("\nEnter Event ID to review: ");
                             int pendingId = getIntInput(sc.nextLine());
+                            if (!pendingEvents.contains(pendingId)) {
+                                System.out.println("⚠️ Invalid Event ID.");
+                                break;
+                            }
                             EventRequest pendingEvent = events.getEventById(pendingId);
 
                             if (pendingEvent == null) {
@@ -365,10 +394,19 @@ public class MenuHandler {
                         case "2":
                             // Review a specific event and approve/reject
                             System.out.println("\n📋 Events Pending Final Approval (from FM):");
-                            events.listPendingEventsForAM();
+                            List<Integer> eventsPending = events.listPendingEventsForAM();
+
+                            if (eventsPending.isEmpty()) {
+                                break;
+                            }
 
                             System.out.print("\nEnter Event ID to review: ");
                             int eId = getIntInput(sc.nextLine());
+
+                            if (!eventsPending.contains(eId)) {
+                                System.out.println("⚠️ Invalid Event ID.");
+                                break;
+                            }
 
                             EventRequest event = events.getEventById(eId);
                             if (event == null) {
@@ -376,10 +414,10 @@ public class MenuHandler {
                                 break;
                             }
 
-                            if (!event.getStatus().equalsIgnoreCase("Approved by FM → Pending Admin Approval")) {
-                                System.out.println("⚠️ This event is not pending Admin approval.");
-                                break;
-                            }
+//                            if (!event.getStatus().equalsIgnoreCase("Approved by FM → Pending Admin Approval")) {
+//                                System.out.println("⚠️ This event is not pending Admin approval.");
+//                                break;
+//                            }
 
                             System.out.println("Current Status: " + event.getStatus());
                             System.out.print("Enter Review Notes / Comments: ");

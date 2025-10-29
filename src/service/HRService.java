@@ -17,6 +17,7 @@ public class HRService {
     public void requestRecruitment(int eventId, String department, String reason, int numberOfPositions) {
         Optional<EventRequest> e = store.events.stream()
                 .filter(ev -> ev.getId() == eventId)
+                .filter(ev -> ev.getStatus() != null && ev.getStatus().contains("OK"))
                 .findFirst();
 
         if (e.isPresent()) {
@@ -34,6 +35,7 @@ public class HRService {
     public void processRecruitment(int eventId, int recruitmentId, String newStatus) {
         Optional<EventRequest> e = store.events.stream()
                 .filter(ev -> ev.getId() == eventId)
+                .filter(ev -> ev.getStatus() != null && ev.getStatus().contains("OK"))
                 .findFirst();
 
         if (e.isEmpty()) {
@@ -92,6 +94,7 @@ public class HRService {
     public void listRecruitments(int eventId) {
         store.events.stream()
                 .filter(e -> e.getId() == eventId)
+                .filter(ev -> ev.getStatus() != null && ev.getStatus().contains("OK"))
                 .findFirst()
                 .ifPresentOrElse(
                         e -> {
