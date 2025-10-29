@@ -5,7 +5,6 @@ import java.util.*;
 
 public class HRService {
     private final DataStore store;
-    private final Scanner sc = new Scanner(System.in);
 
     public HRService(DataStore store) {
         this.store = store;
@@ -55,6 +54,7 @@ public class HRService {
                     newStatus.equalsIgnoreCase("Yes");
 
             if (approved) {
+                Scanner sc = new Scanner(System.in);
                 System.out.println("Recruitment approved for department: " + req.getDepartment());
                 List<String> newMembers = new ArrayList<>();
 

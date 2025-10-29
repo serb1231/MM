@@ -1,5 +1,6 @@
 package service;
 
+import model.EventRequest; // 导入 EventRequest
 import model.EventService;
 import model.SubTeamRequest;
 import model.Task;
@@ -16,6 +17,8 @@ class SubTeamServiceTestWorkflow {
     private TaskService taskService;
     private EventService eventService;
 
+    private EventRequest event;
+
     @BeforeEach
     void setUp() {
         dataStore = new DataStore();
@@ -24,14 +27,15 @@ class SubTeamServiceTestWorkflow {
         eventService = new EventService(dataStore);
 
         eventService.createEvent("Client", "Event");
-        eventService.getEventById(1).setStatus("OK");
+        this.event = dataStore.events.get(0);
+        this.event.setStatus("OK");
     }
 
     @Test
     @DisplayName("US 4.1: View Team Tasks")
     void testViewTeamTasks() {
-        taskService.createTask(1, "Task 1", "Logistics");
-        taskService.createTask(1, "Task 2", "Logistics");
+        taskService.createTask(this.event.getId(), "Task 1", "Logistics");
+        taskService.createTask(this.event.getId(), "Task 2", "Logistics");
 
         SubTeamRequest team = dataStore.subteams.get("Logistics");
 
@@ -41,9 +45,9 @@ class SubTeamServiceTestWorkflow {
     @Test
     @DisplayName("US 4.2: Respond to Task (Accept)")
     void testRespondToTask_Accept() {
-        taskService.createTask(1, "Task 1", "Logistics");
+        taskService.createTask(this.event.getId(), "Task 1", "Logistics");
         Task task = dataStore.subteams.get("Logistics").getTasks().get(0);
-        assertEquals("Pending", task.getStatus()); // Pre-condition
+        assertEquals("Pending", task.getStatus());
 
         subTeamService.respondToTask("Logistics", task.getId(), true, "");
 
@@ -53,7 +57,7 @@ class SubTeamServiceTestWorkflow {
     @Test
     @DisplayName("US 4.2: Respond to Task (Reject)")
     void testRespondToTask_Reject() {
-        taskService.createTask(1, "Task 1", "Logistics");
+        taskService.createTask(this.event.getId(), "Task 1", "Logistics");
         Task task = dataStore.subteams.get("Logistics").getTasks().get(0);
         assertEquals("Pending", task.getStatus());
 

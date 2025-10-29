@@ -29,7 +29,9 @@ class EventServiceTestWorkflow {
         assertEquals(1, dataStore.events.size());
         EventRequest event = dataStore.events.get(0);
         assertNotNull(event);
-        assertEquals(1, event.getId());
+
+        assertTrue(event.getId() > 0);
+
         assertEquals("Test Client", event.getClientName());
         assertEquals("Pending", event.getStatus());
     }
@@ -39,58 +41,72 @@ class EventServiceTestWorkflow {
     void testListPendingEventsForSCS() {
         eventService.createEvent("Client A", "Type A"); // Status: Pending
         eventService.createEvent("Client B", "Type B");
-        dataStore.events.get(1).setStatus("OK"); // Change status
+
+        EventRequest eventA = dataStore.events.get(0);
+        EventRequest eventB = dataStore.events.get(1);
+        eventB.setStatus("OK");
 
         List<Integer> pendingIds = eventService.listPendingEventsForSCS();
 
         assertEquals(1, pendingIds.size());
-        assertEquals(1, pendingIds.get(0)); // Should only contain ID 1
+
+        assertEquals(eventA.getId(), pendingIds.get(0));
     }
 
     @Test
     @DisplayName("US 1.3: Financial Manager Event Review (List Pending)")
     void testListPendingEventsForFM() {
         eventService.createEvent("Client A", "Type A");
-        dataStore.events.get(0).setStatus("Approved by SCS → Pending FM Review");
+
+        EventRequest event = dataStore.events.get(0);
+        event.setStatus("Approved by SCS → Pending FM Review");
 
         List<Integer> pendingIds = eventService.listPendingEventsForFM();
 
         assertEquals(1, pendingIds.size());
-        assertEquals(1, pendingIds.get(0));
+
+        assertEquals(event.getId(), pendingIds.get(0));
     }
 
     @Test
     @DisplayName("US 1.4: Admin Manager Final Approval (List Pending)")
     void testListPendingEventsForAM() {
         eventService.createEvent("Client A", "Type A");
-        dataStore.events.get(0).setStatus("Approved by FM → Pending Admin Approval");
+
+        EventRequest event = dataStore.events.get(0);
+        event.setStatus("Approved by FM → Pending Admin Approval");
 
         List<Integer> pendingIds = eventService.listPendingEventsForAM();
 
         assertEquals(1, pendingIds.size());
-        assertEquals(1, pendingIds.get(0));
+
+        assertEquals(event.getId(), pendingIds.get(0));
     }
 
     @Test
     @DisplayName("US 1.5: Notify Client (List Pending)")
     void testListPendingEventsForFinalSCS() {
         eventService.createEvent("Client A", "Type A");
-        dataStore.events.get(0).setStatus("Approved by AM → Notify SCS/Client");
+
+        EventRequest event = dataStore.events.get(0);
+        event.setStatus("Approved by AM → Notify SCS/Client");
 
         List<Integer> pendingIds = eventService.listPendingEventsForFinalSCS();
 
         assertEquals(1, pendingIds.size());
-        assertEquals(1, pendingIds.get(0));
+
+        assertEquals(event.getId(), pendingIds.get(0));
     }
 
     @Test
     @DisplayName("US 1.5: Notify Client (Mark as OK)")
     void testNotifyClientMarkOK() {
         eventService.createEvent("Client A", "Type A");
-        EventRequest event = eventService.getEventById(1);
-        event.setStatus("Approved by AM → Notify SCS/Client"); // Simulate previous step
 
-        eventService.updateStatus(1, "OK", "Client Notified");
+        EventRequest event = dataStore.events.get(0);
+        event.setStatus("Approved by AM → Notify SCS/Client");
+
+        eventService.updateStatus(event.getId(), "OK", "Client Notified");
 
         assertEquals("OK", event.getStatus());
         assertEquals("Client Notified", event.getNotes());

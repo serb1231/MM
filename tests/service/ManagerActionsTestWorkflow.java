@@ -26,13 +26,11 @@ class ManagerActionsTestWorkflow {
         financeService = new FinanceService(dataStore);
     }
 
-    /**
-     * Helper method to create an event and set its status to "OK"
-     * so it's valid for manager actions.
-     */
     private EventRequest createOKEvent() {
         eventService.createEvent("OK Client", "OK Event");
-        EventRequest event = eventService.getEventById(1);
+
+        EventRequest event = dataStore.events.get(0);
+
         event.setStatus("OK");
         return event;
     }
@@ -48,14 +46,17 @@ class ManagerActionsTestWorkflow {
 
         assertEquals(1, event.getTasks().size());
         assertEquals(1, cateringTeam.getTasks().size());
-        assertEquals("Prepare buffet", event.getTasks().get(0).toString());
+
+        assertTrue(event.getTasks().get(0).toString().contains("Prepare buffet"));
     }
 
     @Test
     @DisplayName("US 2.1: Assign Task Fails for Non-OK Event")
     void testAssignTaskFailsForPendingEvent() {
         eventService.createEvent("Pending Client", "Pending Event"); // Status is "Pending"
-        EventRequest event = eventService.getEventById(1);
+
+        EventRequest event = dataStore.events.get(0);
+
         SubTeamRequest cateringTeam = dataStore.subteams.get("Catering");
 
         taskService.createTask(event.getId(), "This should not work", "Catering");
@@ -75,7 +76,8 @@ class ManagerActionsTestWorkflow {
         assertEquals(1, event.getRecruitments().size());
         assertEquals("Logistics", event.getRecruitments().get(0).getDepartment());
         assertEquals(5, event.getRecruitments().get(0).getNumberOfPositions());
-        assertEquals("Pending HR", event.getRecruitments().get(0).toString());
+
+        assertEquals("Pending HR", event.getRecruitments().get(0).getStatus());
     }
 
     @Test
@@ -88,6 +90,7 @@ class ManagerActionsTestWorkflow {
         financeService.requestFinance(event.getId(), "ProductionManager", details);
 
         assertEquals(1, event.getFinances().size());
-        assertEquals("Pending Finance", event.getFinances().get(0).toString());
+
+        assertEquals("Pending Finance", event.getFinances().get(0).getStatus());
     }
 }

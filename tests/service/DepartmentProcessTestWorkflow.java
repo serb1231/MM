@@ -19,7 +19,6 @@ class DepartmentProcessTestWorkflow {
     private FinanceService financeService;
     private SubTeamService subTeamService;
 
-    // To mock System.in
     private final InputStream originalIn = System.in;
     private ByteArrayInputStream testIn;
 
@@ -52,11 +51,11 @@ class DepartmentProcessTestWorkflow {
     @Test
     @DisplayName("US 3.1: Process Recruitment Request (Approve)")
     void testProcessRecruitment_Approve() {
-        EventRequest event = dataStore.events.getLast();
+
+        EventRequest event = createOKEvent();
         hrService.requestRecruitment(event.getId(), "Security", "Need 2 guards", 2);
         RecruitmentRequest req = event.getRecruitments().get(0);
-        
-        // Mock user input for the 2 new member names
+
         String input = "New Guard 1\nNew Guard 2\n";
         provideInput(input);
 
@@ -103,7 +102,7 @@ class DepartmentProcessTestWorkflow {
         EventRequest event = createOKEvent();
         financeService.requestFinance(event.getId(), "PM", "Need $500");
         FinancialRequest req = event.getFinances().get(0);
-        assertEquals(0.0, event.getBudget()); // Pre-condition
+        assertEquals(0.0, event.getBudget());
 
         String input = "500.0\n";
         provideInput(input);
@@ -124,7 +123,7 @@ class DepartmentProcessTestWorkflow {
 
         financeService.processFinance(event.getId(), req.getId(), "Rejected");
 
-        assertEquals(0.0, event.getBudget()); // Budget remains 0
+        assertEquals(0.0, event.getBudget());
         assertEquals("Rejected", req.getStatus());
     }
 
@@ -141,8 +140,7 @@ class DepartmentProcessTestWorkflow {
         financeService.processFinance(event.getId(), req.getId(), "Approved");
 
 
-        assertEquals(0.0, event.getBudget()); // Budget remains 0
-        // Status remains pending because the method returns early
+        assertEquals(0.0, event.getBudget());
         assertEquals("Pending Finance", req.getStatus());
     }
 }

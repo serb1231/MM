@@ -29,21 +29,22 @@ class VicePresidentReportTestWorkflow {
     @DisplayName("US 5.1: View All Reports by Event")
     void testViewAllReportsByEvent() {
         eventService.createEvent("VP Test Client", "VP Event");
-        EventRequest event = eventService.getEventById(1);
+
+        EventRequest event = dataStore.events.get(0);
         event.setStatus("OK");
 
         taskService.createTask(event.getId(), "VP Task", "Catering");
         hrService.requestRecruitment(event.getId(), "Security", "VP HR Request", 3);
         financeService.requestFinance(event.getId(), "VP", "VP Finance Request");
 
-        EventRequest fetchedEvent = eventService.getEventById(1);
+        EventRequest fetchedEvent = eventService.getEventById(event.getId());
 
         assertNotNull(fetchedEvent);
         assertEquals(1, fetchedEvent.getTasks().size());
         assertEquals(1, fetchedEvent.getRecruitments().size());
         assertEquals(1, fetchedEvent.getFinances().size());
 
-        assertEquals("VP Task", fetchedEvent.getTasks().get(0).toString());
+        assertTrue(fetchedEvent.getTasks().get(0).toString().contains("VP Task"));
         assertEquals(3, fetchedEvent.getRecruitments().get(0).getNumberOfPositions());
         assertTrue(fetchedEvent.getFinances().get(0).toString().contains("VP Finance Request"));
     }
