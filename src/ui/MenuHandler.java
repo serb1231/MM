@@ -88,20 +88,15 @@ public class MenuHandler {
                 System.out.print("Task Description: ");
                 String td = sc.nextLine();
 
-                System.out.print("Assign to existing team? (yes/no): ");
-                String assignChoice = sc.nextLine().trim().toLowerCase();
-
                 String assignedTeam = "Unassigned";
-                if (assignChoice.equals("yes")) {
-                    System.out.println("\n📋 Available Teams for Event#" + eId + ":");
-                    subteams.listTeams();
-                    System.out.print("Enter team name (exactly as shown): ");
-                    assignedTeam = sc.nextLine().trim();
-                }
+                System.out.println("\n📋 Available Teams for Event#" + eId + ":");
+                subteams.listTeams();
+                System.out.print("Enter team name (exactly as shown): ");
+                assignedTeam = sc.nextLine().trim();
 
                 tasks.createTask(eId, td, assignedTeam);
             }
-            else if (pm == 2) { // Request Recruitment
+            else if (pm == 2) {
                 System.out.println("\n📋 Available Teams for Event#" + eId + ":");
                 subteams.listTeams();
                 System.out.print("Enter team Name (exactly as shown: ");
@@ -117,7 +112,6 @@ public class MenuHandler {
 
                 subteams.listMembers(dept);
 
-                // Step 4: Feedback
                 System.out.println("✅ Recruitment request for SubTeam '" + dept + "' with " + count + " positions has been created.");
             }
             else if (pm == 3) {
@@ -132,6 +126,34 @@ public class MenuHandler {
                 hr.listRecruitments(eId);
                 finance.listFinances(eId);
             }
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean logicForSubteam(String team) {
+        System.out.println("\n[SubTeam Leader Menu]");
+        System.out.println("1. View My Tasks  2. Respond to Task  3. View Members  4. Logout");
+        int stChoice = getIntInput(sc.nextLine());
+
+        if (stChoice == 1) {
+            subteams.listTasks(team);
+        } else if (stChoice == 2) {
+            subteams.listTasks(team);
+            System.out.print("Enter Task ID: ");
+            int tId = getIntInput(sc.nextLine());
+            System.out.print("Accept or Reject? (A/R): ");
+            String ans = sc.nextLine().trim();
+            boolean accepted = ans.equalsIgnoreCase("A");
+            String reason = "";
+            if (!accepted) {
+                System.out.print("Reason for rejection: ");
+                reason = sc.nextLine();
+            }
+            subteams.respondToTask(team, tId, accepted, reason);
+        } else if (stChoice == 3) {
+            subteams.listMembers(team);
         } else {
             return false;
         }
@@ -464,38 +486,16 @@ public class MenuHandler {
 
                 // -------------------- SUBTEAM LEADERS --------------------
                 case "Catering":
+                    active = logicForSubteam("Catering");
+                    break;
                 case "Logistics":
+                    active = logicForSubteam("Logistics");
+                    break;
                 case "Security":
+                    active = logicForSubteam("Security");
+                    break;
                 case "Decoration":
-                    System.out.println("\n[SubTeam Leader Menu]");
-                    System.out.println("1. View My Tasks  2. Respond to Task  3. View Members  4. Logout");
-                    int stChoice = getIntInput(sc.nextLine());
-                    String team = "";
-                    if (stChoice != 4) {
-                        System.out.print("Enter Your Team Name: ");
-                        team = sc.nextLine();
-                    }
-
-                    if (stChoice == 1) {
-                        subteams.listTasks(team);
-                    } else if (stChoice == 2) {
-                        subteams.listTasks(team);
-                        System.out.print("Enter Task ID: ");
-                        int tId = getIntInput(sc.nextLine());
-                        System.out.print("Accept or Reject? (A/R): ");
-                        String ans = sc.nextLine().trim();
-                        boolean accepted = ans.equalsIgnoreCase("A");
-                        String reason = "";
-                        if (!accepted) {
-                            System.out.print("Reason for rejection: ");
-                            reason = sc.nextLine();
-                        }
-                        subteams.respondToTask(team, tId, accepted, reason);
-                    } else if (stChoice == 3) {
-                        subteams.listMembers(team);
-                    } else {
-                        active = false;
-                    }
+                    active = logicForSubteam("Decoration");
                     break;
 
 
