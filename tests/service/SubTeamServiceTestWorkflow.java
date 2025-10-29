@@ -54,7 +54,7 @@ class SubTeamServiceTestWorkflow {
         subTeamService.respondToTask("Logistics", task.getId(), true, "");
 
         // Assert
-        assertEquals("Accepted ✅", task.getStatus());
+        assertEquals("Accepted", task.getStatus());
     }
 
     @Test
@@ -69,7 +69,7 @@ class SubTeamServiceTestWorkflow {
         subTeamService.respondToTask("Logistics", task.getId(), false, "No trucks available");
 
         // Assert
-        assertEquals("Rejected ❌ (No trucks available)", task.getStatus());
+        assertEquals("Rejected (No trucks available)", task.getStatus());
     }
 
     @Test

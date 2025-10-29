@@ -20,9 +20,9 @@ public class FinanceService {
         if (e.isPresent()) {
             FinancialRequest f = new FinancialRequest(requester, details);
             e.get().addFinance(f);
-            System.out.println("✅ Finance request submitted for Event#" + eventId);
+            System.out.println("Finance request submitted for Event#" + eventId);
         } else {
-            System.out.println("⚠️ Event not found with ID " + eventId);
+            System.out.println("Event not found with ID " + eventId);
         }
     }
 
@@ -49,25 +49,25 @@ public class FinanceService {
                         try {
                             amount = Double.parseDouble(sc.nextLine());
                         } catch (NumberFormatException ex) {
-                            System.out.println("⚠️ Invalid number. No budget updated.");
+                            System.out.println("Invalid number. No budget updated.");
                             return;
                         }
 
                         double newBudget = event.getBudget() + amount;
                         event.setBudget(newBudget);
                         f.setStatus("Approved - $" + amount + " added");
-                        System.out.println("✅ Approved! Event#" + eventId + " budget increased by $" + amount);
-                        System.out.println("💰 New budget: $" + newBudget);
+                        System.out.println("Approved! Event#" + eventId + " budget increased by $" + amount);
+                        System.out.println("New budget: $" + newBudget);
                     } else {
                         f.setStatus("Rejected");
-                        System.out.println("❌ Finance request #" + financeId + " has been rejected.");
+                        System.out.println("Finance request #" + financeId + " has been rejected.");
                     }
                     return;
                 }
             }
-            System.out.println("⚠️ Finance ID not found in this event.");
+            System.out.println("Finance ID not found in this event.");
         } else {
-            System.out.println("⚠️ Event not found.");
+            System.out.println("Event not found.");
         }
     }
 
@@ -85,7 +85,7 @@ public class FinanceService {
                                 e.getFinances().forEach(System.out::println);
                             }
                         },
-                        () -> System.out.println("⚠️ Event not found.")
+                        () -> System.out.println("Event not found.")
                 );
     }
 }
