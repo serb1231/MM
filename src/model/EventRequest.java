@@ -18,7 +18,7 @@ public class EventRequest {
     private List<RecruitmentRequest> recruitments;
 
     // Departments and their users (per event)
-    private Map<String, List<String>> departments;
+//    private Map<String, List<String>> departments;
 
     public EventRequest(String clientName, String eventType) {
         this.id = counter++;
@@ -32,7 +32,7 @@ public class EventRequest {
         this.tasks = new ArrayList<>();
         this.finances = new ArrayList<>();
         this.recruitments = new ArrayList<>();
-        this.departments = new HashMap<>();
+//        this.departments = new HashMap<>();
     }
 
     // --- Getters / setters ---
@@ -54,27 +54,27 @@ public class EventRequest {
     public List<FinancialRequest> getFinances() { return finances; }
     public List<RecruitmentRequest> getRecruitments() { return recruitments; }
 
-    public Map<String, List<String>> getDepartments() { return departments; }
+//    public Map<String, List<String>> getDepartments() { return departments; }
 
     // --- Convenience methods ---
     public void addTask(Task t) { tasks.add(t); }
     public void addFinance(FinancialRequest f) { finances.add(f); }
     public void addRecruitment(RecruitmentRequest r) { recruitments.add(r); }
 
-    public void addMemberToDepartment(String department, String memberName) {
-        departments.computeIfAbsent(department, k -> new ArrayList<>()).add(memberName);
-    }
+//    public void addMemberToDepartment(String department, String memberName) {
+//        departments.computeIfAbsent(department, k -> new ArrayList<>()).add(memberName);
+//    }
 
-    public void printDepartments() {
-        if (departments.isEmpty()) {
-            System.out.println("No departments or users assigned yet.");
-        } else {
-            System.out.println("--- Departments for Event#" + id + " ---");
-            departments.forEach((dept, users) ->
-                    System.out.println("• " + dept + ": " + (users.isEmpty() ? "No members" : String.join(", ", users)))
-            );
-        }
-    }
+//    public void printDepartments() {
+//        if (departments.isEmpty()) {
+//            System.out.println("No departments or users assigned yet.");
+//        } else {
+//            System.out.println("--- Departments for Event#" + id + " ---");
+//            departments.forEach((dept, users) ->
+//                    System.out.println("• " + dept + ": " + (users.isEmpty() ? "No members" : String.join(", ", users)))
+//            );
+//        }
+//    }
 
     @Override
     public String toString() {

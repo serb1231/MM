@@ -12,9 +12,10 @@ public class Main {
         TaskService tasks = new TaskService(store);
         HRService hr = new HRService(store);
         FinanceService finance = new FinanceService(store);
+        SubTeamService subTeamService = new SubTeamService(store);
 
         // Create and start the main terminal UI
-        MenuHandler ui = new MenuHandler(auth, events, tasks, hr, finance);
+        MenuHandler ui = new MenuHandler(auth, events, tasks, hr, finance, subTeamService);
         ui.start();
     }
 }

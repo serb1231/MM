@@ -11,13 +11,15 @@ public class MenuHandler {
     private final HRService hr;
     private final FinanceService finance;
     private final Scanner sc = new Scanner(System.in);
+    private final SubTeamService subteams;
 
-    public MenuHandler(AuthService auth, EventService events, TaskService tasks, HRService hr, FinanceService finance) {
+    public MenuHandler(AuthService auth, EventService events, TaskService tasks, HRService hr, FinanceService finance, SubTeamService subteams) {
         this.auth = auth;
         this.events = events;
         this.tasks = tasks;
         this.hr = hr;
         this.finance = finance;
+        this.subteams = subteams;
     }
 
     public void start() {
@@ -36,6 +38,90 @@ public class MenuHandler {
             System.out.println("\nWelcome, " + user.getUsername() + " (" + user.getRole() + ")");
             handleRole(user);
         }
+    }
+
+//    we should return if it is active
+    private boolean LogicForSMorPM() {
+        System.out.println("1. Assign Task  2. Request Recruitment  3. Request Finance  4. View All (Event)  5. Logout");
+        int pm = Integer.parseInt(sc.nextLine());
+        if (pm >= 1 && pm <= 4) {
+            events.listEvents();
+            System.out.print("Enter Event ID: ");
+            int eId = Integer.parseInt(sc.nextLine());
+
+            if (pm == 1) {
+                // Show available teams for this event
+                System.out.println("\n📋 Available Teams for Event#" + eId + ":");
+//                events.getAllEvents().stream()
+//                        .filter(ev -> ev.getId() == eId)
+//                        .findFirst()
+//                        .ifPresent(EventRequest::printDepartments);
+                subteams.listTeams();
+
+
+                System.out.println();
+
+                System.out.print("Task Description: ");
+                String td = sc.nextLine();
+
+                System.out.print("Assign to existing team? (yes/no): ");
+                String assignChoice = sc.nextLine().trim().toLowerCase();
+
+                String assignedTeam = "Unassigned";
+                if (assignChoice.equals("yes")) {
+                    System.out.println("\n📋 Available Teams for Event#" + eId + ":");
+//                    events.getAllEvents().stream()
+//                            .filter(ev -> ev.getId() == eId)
+//                            .findFirst()
+//                            .ifPresent(EventRequest::printDepartments);
+                    subteams.listTeams();
+                    System.out.print("Enter team name (exactly as shown): ");
+                    assignedTeam = sc.nextLine().trim();
+                }
+
+                tasks.createTask(eId, td, assignedTeam);
+            }
+            else if (pm == 2) { // Request Recruitment
+                System.out.println("\n📋 Available Teams for Event#" + eId + ":");
+//                events.getAllEvents().stream()
+//                        .filter(ev -> ev.getId() == eId)
+//                        .findFirst()
+//                        .ifPresent(EventRequest::printDepartments);
+                subteams.listTeams();
+                System.out.print("Enter team Name (exactly as shown: ");
+                String dept = sc.nextLine().trim();
+
+                System.out.print("Number of people to recruit: ");
+                int count = Integer.parseInt(sc.nextLine());
+
+                System.out.print("Reason for Recruitment: ");
+                String reason = sc.nextLine();
+
+                hr.requestRecruitment(eId, dept, reason, count);
+
+//                System.out.println("👥 Current members of '" + dept + "': " +
+//                        (team.getMembers().isEmpty() ? "None" : String.join(", ", team.getMembers())));
+                subteams.listMembers(dept);
+
+                // Step 4: Feedback
+                System.out.println("✅ Recruitment request for SubTeam '" + dept + "' with " + count + " positions has been created.");
+            }
+            else if (pm == 3) {
+                System.out.print("Requested Amount ($): ");
+                double amount = Double.parseDouble(sc.nextLine());
+                System.out.print("Finance Request Details: ");
+                String d = sc.nextLine();
+                String details = d + " [Requested $" + amount + "]";
+                finance.requestFinance(eId, "ProductionManager/ServiceManager", details);
+            } else if (pm == 4) {
+                tasks.listTasks(eId);
+                hr.listRecruitments(eId);
+                finance.listFinances(eId);
+            }
+        } else {
+            return false;
+        }
+        return true;
     }
 
     private void handleRole(User u) {
@@ -82,7 +168,7 @@ public class MenuHandler {
                     }
                     break;
 
-// -------------------- FINANCIAL MANAGER --------------------
+                // -------------------- FINANCIAL MANAGER --------------------
                 case "FinancialManager":
                     System.out.println("\n[Financial Manager Menu]");
                     System.out.println("1. Approve/Reject Budgets  2. View Finance Requests by Event  3. Logout");
@@ -137,89 +223,19 @@ public class MenuHandler {
                 // -------------------- PRODUCTION MANAGER --------------------
                 case "ProductionManager":
                     System.out.println("\n[Production Manager Menu]");
-                    System.out.println("1. Assign Task  2. Request Recruitment  3. Request Finance  4. View All (Event)  5. Logout");
-                    int pm = Integer.parseInt(sc.nextLine());
-                    if (pm >= 1 && pm <= 4) {
-                        events.listEvents();
-                        System.out.print("Enter Event ID: ");
-                        int eId = Integer.parseInt(sc.nextLine());
-
-                        if (pm == 1) {
-                            System.out.print("Task Description: ");
-                            String td = sc.nextLine();
-                            System.out.print("Team Name: ");
-                            String t = sc.nextLine();
-                            tasks.createTask(eId, td, t);
-                        } else if (pm == 2) {
-                            System.out.print("Department (e.g. Production): ");
-                            String dept = sc.nextLine().trim();
-                            System.out.print("Number of people to recruit: ");
-                            int count = Integer.parseInt(sc.nextLine());
-                            System.out.print("Reason for Recruitment: ");
-                            String r = sc.nextLine();
-                            hr.requestRecruitment(eId, dept, r, count);
-                        } else if (pm == 3) {
-                            System.out.print("Requested Amount ($): ");
-                            double amount = Double.parseDouble(sc.nextLine());
-                            System.out.print("Finance Request Details: ");
-                            String d = sc.nextLine();
-                            String details = d + " [Requested $" + amount + "]";
-                            finance.requestFinance(eId, "ProductionManager", details);
-                        } else if (pm == 4) {
-                            tasks.listTasks(eId);
-                            hr.listRecruitments(eId);
-                            finance.listFinances(eId);
-                        }
-                    } else {
-                        active = false;
-                    }
+                    active = LogicForSMorPM();
                     break;
 
                 // -------------------- SERVICE MANAGER --------------------
                 case "ServiceManager":
                     System.out.println("\n[Service Manager Menu]");
-                    System.out.println("1. Assign Task  2. Request Recruitment  3. Request Finance  4. View All (Event)  5. Logout");
-                    int sm = Integer.parseInt(sc.nextLine());
-                    if (sm >= 1 && sm <= 4) {
-                        events.listEvents();
-                        System.out.print("Enter Event ID: ");
-                        int eId = Integer.parseInt(sc.nextLine());
-
-                        if (sm == 1) {
-                            System.out.print("Task Description: ");
-                            String td = sc.nextLine();
-                            System.out.print("Team Name: ");
-                            String t = sc.nextLine();
-                            tasks.createTask(eId, td, t);
-                        } else if (sm == 2) {
-                            System.out.print("Department (e.g. Production): ");
-                            String dept = sc.nextLine().trim();
-                            System.out.print("Number of people to recruit: ");
-                            int count = Integer.parseInt(sc.nextLine());
-                            System.out.print("Reason for Recruitment: ");
-                            String r = sc.nextLine();
-                            hr.requestRecruitment(eId, dept, r, count);
-                        } else if (sm == 3) {
-                            System.out.print("Requested Amount ($): ");
-                            double amount = Double.parseDouble(sc.nextLine());
-                            System.out.print("Finance Request Details: ");
-                            String d = sc.nextLine();
-                            String details = d + " [Requested $" + amount + "]";
-                            finance.requestFinance(eId, "ServiceManager", details);
-                        } else if (sm == 4) {
-                            tasks.listTasks(eId);
-                            hr.listRecruitments(eId);
-                            finance.listFinances(eId);
-                        }
-                    } else {
-                        active = false;
-                    }
+                    active = LogicForSMorPM();
                     break;
 
-// -------------------- HR --------------------
+                // -------------------- HR --------------------
                 case "HR":
                     System.out.println("\n[HR Menu]");
-                    System.out.println("1. View Recruitment Requests (Event)  2. Process Recruitment  3. View Departments  4. Logout");
+                    System.out.println("1. View Recruitment Requests (Event)  2. Process Recruitment  3. Manage SubTeams  4. Logout");
                     int hrChoice = Integer.parseInt(sc.nextLine());
 
                     if (hrChoice == 1 || hrChoice == 2 || hrChoice == 3) {
@@ -235,7 +251,7 @@ public class MenuHandler {
                                 .filter(ev -> ev.getId() == eId)
                                 .findFirst()
                                 .ifPresentOrElse(
-                                        EventRequest::printDepartments,
+                                        event -> {subteams.listAllMembers();},
                                         () -> System.out.println("⚠️ Event not found.")
                                 );
 
@@ -254,16 +270,59 @@ public class MenuHandler {
                             hr.processRecruitment(eId, id, st);
 
                         } else if (hrChoice == 3) {
-                            // Just re-display department members for clarity
-                            events.getAllEvents().stream()
-                                    .filter(ev -> ev.getId() == eId)
-                                    .findFirst()
-                                    .ifPresentOrElse(
-                                            event -> {},
-                                            () -> System.out.println("⚠️ Event not found.")
-                                    );
+                            // --- Manage SubTeams ---
+                            subteams.listTeams();
+                            System.out.print("Select SubTeam Name: ");
+                            String tName = sc.nextLine();
+
+                            System.out.println("1. View Members  2. Add Member");
+                            int sub = Integer.parseInt(sc.nextLine());
+
+                            if (sub == 1) {
+                                subteams.listMembers(tName);
+                            } else if (sub == 2) {
+                                System.out.print("Enter New Member Name: ");
+                                String newMem = sc.nextLine();
+                                subteams.addMember(tName, newMem);
+                            }
                         }
 
+                    } else {
+                        active = false;
+                    }
+                    break;
+
+
+                // -------------------- SUBTEAM LEADERS --------------------
+                case "Catering":
+                case "Logistics":
+                case "Security":
+                case "Decoration":
+                    System.out.println("\n[SubTeam Leader Menu]");
+                    System.out.println("1. View My Tasks  2. Respond to Task  3. View Members  4. Logout");
+                    int stChoice = Integer.parseInt(sc.nextLine());
+                    if (stChoice != 4) {
+                        System.out.print("Enter Your Team Name: ");
+                    }
+                    String team = sc.nextLine();
+
+                    if (stChoice == 1) {
+                        subteams.listTasks(team);
+                    } else if (stChoice == 2) {
+                        subteams.listTasks(team);
+                        System.out.print("Enter Task ID: ");
+                        int tId = Integer.parseInt(sc.nextLine());
+                        System.out.print("Accept or Reject? (A/R): ");
+                        String ans = sc.nextLine().trim();
+                        boolean accepted = ans.equalsIgnoreCase("A");
+                        String reason = "";
+                        if (!accepted) {
+                            System.out.print("Reason for rejection: ");
+                            reason = sc.nextLine();
+                        }
+                        subteams.respondToTask(team, tId, accepted, reason);
+                    } else if (stChoice == 3) {
+                        subteams.listMembers(team);
                     } else {
                         active = false;
                     }

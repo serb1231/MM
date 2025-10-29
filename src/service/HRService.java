@@ -61,7 +61,14 @@ public class HRService {
                     String member = sc.nextLine().trim();
                     if (!member.isEmpty()) {
                         newMembers.add(member);
-                        event.addMemberToDepartment(req.getDepartment(), member);
+//                        get the SubTeam and add member
+                        SubTeamRequest team = store.subteams.get(req.getDepartment());
+                        if (team != null) {
+                            team.addMember(member);
+                            System.out.println("✅ Added " + member + " to " + req.getDepartment());
+                        } else {
+                            System.out.println("⚠️ Department " + req.getDepartment() + " not found in SubTeams.");
+                        }
                     }
                 }
 

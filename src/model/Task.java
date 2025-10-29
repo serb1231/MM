@@ -1,6 +1,7 @@
 package model;
 
 public class Task {
+//    counter for unique task IDs
     private static int counter = 1;
     private int id;
     private String description;

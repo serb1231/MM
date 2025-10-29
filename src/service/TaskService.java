@@ -12,47 +12,72 @@ public class TaskService {
 
     /**
      * Create a brand new task and assign it to a team for a specific event.
+     * It automatically links the task to both the event and the assigned team.
      */
     public void createTask(int eventId, String description, String assignedTo) {
         Optional<EventRequest> e = store.events.stream()
                 .filter(ev -> ev.getId() == eventId)
                 .findFirst();
 
-        if (e.isPresent()) {
-            Task t = new Task(description, assignedTo);
-            e.get().addTask(t);
-            System.out.println("✅ New task created and assigned to " + assignedTo + " for Event#" + eventId);
-        } else {
-            System.out.println("⚠️ Event not found with ID " + eventId);
-        }
-    }
-
-    /**
-     * Reassign an existing task (to a new team or member).
-     */
-    public void reassignTask(int eventId, int taskId, String newAssignee) {
-        Optional<EventRequest> e = store.events.stream()
-                .filter(ev -> ev.getId() == eventId)
-                .findFirst();
-
         if (e.isEmpty()) {
-            System.out.println("⚠️ Event not found with ID " + eventId);
+            System.out.println("⚠️ Event not found.");
             return;
         }
 
-        EventRequest event = e.get();
-        Optional<Task> t = event.getTasks().stream()
-                .filter(task -> task.getId() == taskId)
-                .findFirst();
-
-        if (t.isPresent()) {
-            Task task = t.get();
-            task.setStatus("Reassigned to " + newAssignee);
-            System.out.println("🔄 Task#" + taskId + " reassigned to " + newAssignee + " for Event#" + eventId);
-        } else {
-            System.out.println("⚠️ Task not found with ID " + taskId + " in Event#" + eventId);
+        if (!store.subteams.containsKey(assignedTo)) {
+            System.out.println("⚠️ Invalid team name. Use one of: " + store.subteams.keySet());
+            return;
         }
+
+        Task t = new Task(description, assignedTo);
+        e.get().addTask(t);
+
+        store.subteams.get(assignedTo).addTask(t);
+
+        System.out.println("✅ Task created and assigned to " + assignedTo + " for Event#" + eventId);
     }
+
+//    /**
+//     * Reassign an existing task (to a new team or member).
+//     */
+//    public void reassignTask(int eventId, int taskId, String newAssignee) {
+//        Optional<EventRequest> e = store.events.stream()
+//                .filter(ev -> ev.getId() == eventId)
+//                .findFirst();
+//
+//        if (e.isEmpty()) {
+//            System.out.println("⚠️ Event not found with ID " + eventId);
+//            return;
+//        }
+//
+//        EventRequest event = e.get();
+//        Optional<Task> tOpt = event.getTasks().stream()
+//                .filter(task -> task.getId() == taskId)
+//                .findFirst();
+//
+//        if (tOpt.isEmpty()) {
+//            System.out.println("⚠️ Task not found with ID " + taskId + " in Event#" + eventId);
+//            return;
+//        }
+//
+//        Task task = tOpt.get();
+//
+//        // Remove task from its old team if it was assigned
+//        if (store.subteams.containsKey(task.getAssignedTo())) {
+//            store.subteams.get(task.getAssignedTo()).getTasks().remove(task);
+//        }
+//
+//        // Reassign to new team
+//        task.setAssignedTo(newAssignee);
+//        task.setStatus("Reassigned to " + newAssignee);
+//
+//        // Add to new team if valid
+//        if (store.subteams.containsKey(newAssignee)) {
+//            store.subteams.get(newAssignee).addTask(task);
+//        }
+//
+//        System.out.println("🔄 Task#" + taskId + " reassigned to " + newAssignee + " for Event#" + eventId);
+//    }
 
     /**
      * Update the status of a task (e.g., Pending → In Progress → Completed).
@@ -68,16 +93,18 @@ public class TaskService {
         }
 
         EventRequest event = e.get();
-        Optional<Task> t = event.getTasks().stream()
+        Optional<Task> tOpt = event.getTasks().stream()
                 .filter(task -> task.getId() == taskId)
                 .findFirst();
 
-        if (t.isPresent()) {
-            t.get().setStatus(status);
-            System.out.println("✅ Task#" + taskId + " status updated to: " + status);
-        } else {
+        if (tOpt.isEmpty()) {
             System.out.println("⚠️ Task not found with ID " + taskId + " in Event#" + eventId);
+            return;
         }
+
+        Task task = tOpt.get();
+        task.setStatus(status);
+        System.out.println("✅ Task#" + taskId + " status updated to: " + status);
     }
 
     /**
